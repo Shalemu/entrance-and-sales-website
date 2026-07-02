@@ -1,18 +1,10 @@
-import Signin from "@/components/Booking/trackBooking";
-import React from "react";
-import { Metadata } from "next";
-export const metadata: Metadata = {
-  title: "Booking Page | Entrance & Sale Website",
-  description: "",
-  // other metadata
-};
+import Booking from "@/components/Booking";
 
-const SigninPage = () => {
+export default function BookingPage() {
   return (
-    <main>
-      <Signin />
+    <main className="py-20">
+      <h1 className="text-5xl text-red-600">BOOKING PAGE</h1>
+      <Booking />
     </main>
   );
-};
-
-export default SigninPage;
+}

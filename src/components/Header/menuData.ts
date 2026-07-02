@@ -157,12 +157,12 @@ export const menuData: Menu[] = [
   //   ],
   // },
 
-    {
-    id: 7,
-    title: "Buy tickets",
-    newTab: false,
-    path: "/",
-  },
+{
+  id: 7,
+  title: "Buy Tickets",
+  newTab: false,
+  path: "/booking",
+},
 
   // {
   //   id: 7,

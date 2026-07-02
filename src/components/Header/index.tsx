@@ -75,7 +75,7 @@ const formattedDate = useMemo(() => {
         {/* <!-- header top start --> */}
         <div
           className={`flex flex-col lg:flex-row gap-5 items-end lg:items-center xl:justify-between ease-out duration-200 ${
-            stickyMenu ? "py-4" : "py-6"
+            stickyMenu ? "py-2" : "py-3"
           }`}
         >
           {/* <!-- header top left --> */}
