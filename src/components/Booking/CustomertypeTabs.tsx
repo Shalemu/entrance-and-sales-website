@@ -1,9 +1,5 @@
 const customerTypes = [
   {
-    id: "walkin",
-    label: "Walk In",
-  },
-  {
     id: "individual",
     label: "Individual",
   },

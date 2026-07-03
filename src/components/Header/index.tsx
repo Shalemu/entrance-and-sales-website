@@ -59,18 +59,20 @@ const formattedDate = useMemo(() => {
   });
 }, [selectedDate]);
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleStickyMenu);
-  });
+useEffect(() => {
+  window.addEventListener("scroll", handleStickyMenu);
+
+  return () => window.removeEventListener("scroll", handleStickyMenu);
+}, []);
 
 
 
   return (
-    <header
-      className={`fixed left-0 top-0 w-full z-9999 bg-white transition-all ease-in-out duration-300 ${
-        stickyMenu && "shadow"
-      }`}
-    >
+<header
+  className={`fixed top-0 left-0 w-full z-50 bg-white border-b border-gray-200 transition-all duration-300 ${
+    stickyMenu ? "shadow-md" : ""
+  }`}
+>
       <div className="max-w-[1170px] mx-auto px-4 sm:px-7.5 xl:px-0">
         {/* <!-- header top start --> */}
         <div
