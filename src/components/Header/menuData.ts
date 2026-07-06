@@ -19,69 +19,7 @@ export const menuData: Menu[] = [
     newTab: false,
     path: "/contact",
   },
-  {
-  id: 6,
-  title: "Services",
-  newTab: false,
-  path: "/services",
-  submenu: [
-    {
-      id: 61,
-      title: "Swimming Pool",
-      newTab: false,
-      path: "/services/swimming-pool",
-    },
-    {
-      id: 62,
-      title: "Hall Event",
-      newTab: false,
-      path: "/services/hall-event",
-    },
-    {
-      id: 63,
-      title: "Wedding Events",
-      newTab: false,
-      path: "/services/wedding-events",
-    },
-    {
-      id: 64,
-      title: "Conference Booking",
-      newTab: false,
-      path: "/services/conference-booking",
-    },
-    {
-      id: 65,
-      title: "VIP Lounge",
-      newTab: false,
-      path: "/services/vip-lounge",
-    },
-    {
-      id: 66,
-      title: "Birthday Events",
-      newTab: false,
-      path: "/services/birthday-events",
-    },
-    {
-      id: 67,
-      title: "Outdoor Events",
-      newTab: false,
-      path: "/services/outdoor-events",
-    },
-    {
-      id: 68,
-      title: "Restaurant Booking",
-      newTab: false,
-      path: "/services/restaurant-booking",
-    },
-    {
-      id: 69,
-      title: "Kids Playing Area",
-      newTab: false,
-      path: "/services/kids-area",
-    },
- 
-  ],
-},
+
   // {
   //   id: 6,
   //   title: "Pages",

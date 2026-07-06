@@ -1,11 +1,8 @@
 "use client";
 
-import {
-  BadgeCheck,
-  CheckCircle2,
-} from "lucide-react";
-
+import { CheckCircle2, Plus, X } from "lucide-react";
 import { Package } from "./types";
+import { getActivePrices, getCurrentPricingRule } from "./utils/pricing";
 
 type Props = {
   package: Package;
@@ -18,91 +15,56 @@ export default function PackageCard({
   selected,
   onSelect,
 }: Props) {
+  const rule = getCurrentPricingRule();
+  const activePrices = getActivePrices(pkg.prices || [], rule);
+
+  const price = activePrices[0] || pkg.prices?.[0];
+
+  const hasRange =
+    price?.minimum_quantity != null &&
+    price?.maximum_quantity != null;
+
   return (
     <div
       onClick={onSelect}
-      className={`cursor-pointer rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
-        selected
-          ? "border-blue-600 ring-2 ring-blue-100 bg-blue-50"
-          : "border-gray-200 bg-white"
+      className={`cursor-pointer rounded-2xl border p-6 transition hover:shadow-lg ${
+        selected ? "border-blue-600 ring-2 ring-blue-100" : "border-gray-200"
       }`}
     >
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between">
+        <h3 className="text-xl font-bold">{pkg.name}</h3>
 
-        <div>
-
-          <div className="flex items-center gap-3">
-
-            <h3 className="text-xl font-bold text-gray-900">
-              {pkg.name}
-            </h3>
-
-            {pkg.recommended && (
-              <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
-                Recommended
-              </span>
-            )}
-
-          </div>
-
-          <p className="mt-2 text-gray-500">
-            {pkg.duration}
-          </p>
-
-        </div>
-
-        {selected && (
-          <BadgeCheck
-            className="text-green-500"
-            size={28}
-          />
-        )}
-
+        {selected && <CheckCircle2 size={20} className="text-blue-600" />}
       </div>
 
-      <div className="mt-6 grid md:grid-cols-2 gap-3">
+      <p className="text-sm text-gray-500">{pkg.package_type?.name}</p>
 
-        {pkg.features.map((feature) => (
-          <div
-            key={feature}
-            className="flex items-center gap-2 text-sm text-gray-600"
-          >
-            <CheckCircle2
-              size={16}
-              className="text-green-500"
-            />
+      <div className="mt-4 border-t pt-4">
+        <p className="text-lg font-semibold">
+          TZS {Number(price?.price || 0).toLocaleString()}
+        </p>
 
-            {feature}
-          </div>
-        ))}
+        <p className="text-sm text-gray-600">
+          {hasRange
+            ? `${price.minimum_quantity} - ${price.maximum_quantity} guests`
+            : "Flat package"}
+        </p>
 
+        <p className="text-xs text-gray-400">
+          {price?.pricing_rule}
+        </p>
       </div>
 
-      <div className="mt-8 flex justify-between items-center border-t pt-5">
-
-        <div>
-
-          <p className="text-sm text-gray-500">
-            Starting From
-          </p>
-
-          <h2 className="text-3xl font-bold text-blue-600">
-            {pkg.price}
-          </h2>
-
-        </div>
-
+      <div className="mt-6 flex justify-end">
         <button
-          type="button"
-          className={`rounded-xl px-6 py-3 font-medium transition ${
+          className={`rounded-xl px-5 py-2 text-sm font-medium ${
             selected
               ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-blue-50"
+              : "bg-gray-900 text-white hover:bg-blue-600"
           }`}
         >
-          {selected ? "Selected" : "Select Package"}
+          {selected ? "Added" : "Add Package"}
         </button>
-
       </div>
     </div>
   );

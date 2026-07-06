@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import FormInput from "../Common/FormInput";
-import SuccessCard from "../Common/SuccessCard";
 import { createCustomer, CustomerType } from "@/lib/customer-api";
+import SuccessCard from "../Common/SuccessCard";
 
 type Props = {
   type: CustomerType;
@@ -43,22 +43,14 @@ export default function CorporateForm({
       // Automatically continue after 2 seconds
       setTimeout(() => {
         onSuccess();
-      }, 2000);
+      }, 3000);
     } catch (err: any) {
       alert(err.message || "Something went wrong");
     }
   };
-
-  // Show success card instead of the form
   if (showSuccess) {
-    return (
-      <SuccessCard
-        title="Company Created Successfully"
-        message="Redirecting to Service & Package..."
-      />
-    );
-  }
-
+  return <SuccessCard />;
+}
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid gap-5 md:grid-cols-2">

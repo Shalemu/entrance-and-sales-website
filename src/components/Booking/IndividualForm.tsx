@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import FormInput from "../Common/FormInput";
-import SuccessCard from "../Common/SuccessCard";
 import { createCustomer, CustomerType } from "@/lib/customer-api";
+import SuccessCard from "../Common/SuccessCard";
 
 type Props = {
   type: CustomerType;
@@ -43,7 +43,7 @@ export default function IndividualForm({
       // Move to next step after 2 seconds
       setTimeout(() => {
         onSuccess();
-      }, 2000);
+      }, 3000);
     } catch (err: any) {
       alert(err.message || "Something went wrong");
     }
@@ -51,13 +51,8 @@ export default function IndividualForm({
 
   // Show success screen instead of the form
   if (showSuccess) {
-    return (
-      <SuccessCard
-        title="Customer Created Successfully"
-        message="Redirecting to Service & Package..."
-      />
-    );
-  }
+  return <SuccessCard />;
+}
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-5 md:grid-cols-2">
