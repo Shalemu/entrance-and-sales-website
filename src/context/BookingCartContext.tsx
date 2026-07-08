@@ -1,4 +1,5 @@
 "use client";
+
 import {
   createContext,
   useContext,
@@ -16,75 +17,85 @@ export type CartItem = {
 };
 
 type BookingCartContextType = {
+
   items: CartItem[];
   setItems: (
     items: CartItem[]
   ) => void;
-  itemCount: number;
-  totalPrice: number;
-  addItem: (
-    item: CartItem
-  ) => void;
 
-  removeItem: (
+  itemCount:number;
+  totalPrice:number;
+  addItem:(
+    item:CartItem
+  )=>void;
+
+  removeItem:(
     id:number
-  ) => void;
+  )=>void;
 
   clearCart:()=>void;
+
+  // ADD THIS
+  customer:any;
+  setCustomer:(
+    customer:any
+  )=>void;
 
 };
 
 const BookingCartContext =
 createContext<BookingCartContextType | undefined>(
-  undefined
+undefined
 );
 
 export function BookingCartProvider({
-  children,
+children,
 }:{
-  children:ReactNode;
-}) {
+children:ReactNode;
+}){
 
-const [items,setItems] =
+const [items,setItems]
+=
 useState<CartItem[]>([]);
 
-// total quantity badge
+// ADD THIS
+const [customer,setCustomer]
+=
+useState<any>(null);
+
 const itemCount =
 items.reduce(
-  (sum,item)=>
-    sum + item.quantity,
-    0
+(sum,item)=>
+sum + item.quantity,
+0
 );
 
-// calculate total price
 const totalPrice =
 items.reduce(
-  (sum,item)=>{
+(sum,item)=>{
 
-    const price =
-      Number(
-        item.price ??
-        item.service?.prices?.[0]?.price ??
-        item.package?.prices?.[0]?.price ??
-        0
-      );
-    return (
-      sum +
-      price * item.quantity
-    );
-
-  },
-  0
+const price =
+Number(
+item.price ??
+item.service?.prices?.[0]?.price ??
+item.package?.prices?.[0]?.price ??
+0
 );
 
-// add item
+return sum + price * item.quantity;
+
+},
+0
+);
+
 const addItem = (
-  item:CartItem
+item:CartItem
 )=>{
+
 setItems(prev=>{
 const existing =
 prev.find(
-  x=>x.id === item.id
+x=>x.id === item.id
 );
 
 if(existing){
@@ -92,37 +103,40 @@ return prev.map(x=>
 x.id === item.id
 ?
 {
- ...x,
- quantity:
- x.quantity + item.quantity
+...x,
+quantity:
+x.quantity + item.quantity
 }
-
 :
 x
 );
-
 }
 
 return [
- ...prev,
- item
+...prev,
+item
 ];
+
 });
+
 };
 
-// remove item
 const removeItem = (
- id:number
+id:number
 )=>{
+
 setItems(prev=>
 prev.filter(
- item=>item.id !== id
+item=>item.id !== id
 )
 );
+
 };
+
 const clearCart = ()=>{
 setItems([]);
 };
+
 return (
 <BookingCartContext.Provider
 value={{
@@ -132,17 +146,21 @@ itemCount,
 totalPrice,
 addItem,
 removeItem,
-clearCart
+clearCart,
+// ADD THESE
+customer,
+setCustomer,
 }}
 >
 {children}
 </BookingCartContext.Provider>
 );
 }
+
 export function useBookingCart(){
 const context =
 useContext(
-  BookingCartContext
+BookingCartContext
 );
 if(!context){
 throw new Error(

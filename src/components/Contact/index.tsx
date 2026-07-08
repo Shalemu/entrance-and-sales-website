@@ -8,7 +8,7 @@ const Contact = () => {
     <>
       <Breadcrumb title={"Contact"} pages={["contact"]} />
 
-      <section className="overflow-hidden py-20 bg-gray-2">
+      <section className="overflow-hidden py-2 bg-gray-2">
         <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
 
           <div className="flex flex-col xl:flex-row gap-8">

@@ -204,20 +204,16 @@ const CartSidebarModal = () => {
                       ) => (
 
                       <SingleItem
-
-                        key={
-                          item.service?.id ??
-                          item.package?.id ??
-                          index
-                        }
-
-                        item={item}
-
-                        removeItemFromCart={
-                          removeItem
-                        }
-
-                      />
+                      key={
+                        item.service?.id
+                          ? `service-${item.service.id}`
+                          : item.package?.id
+                          ? `package-${item.package.id}`
+                          : `item-${index}`
+                      }
+                      item={item}
+                      removeItemFromCart={removeItem}
+                    />
 
                     ))
                   }

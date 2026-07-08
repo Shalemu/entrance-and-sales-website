@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, CreditCard, Minus, Plus } from "lucide-react";
+import { ArrowRight, CreditCard, Minus, Plus, UsersRound } from "lucide-react";
 
 import type { GroupType } from "./GroupType/Grouptype";
 import type { Package } from "./ServicePackage/types/types";
@@ -15,6 +15,7 @@ type Props = {
   items: BookingItem[];
   onIncrease: (serviceId: number) => void;
   onDecrease: (serviceId: number) => void;
+  onCheckout: () => void; 
 };
 
 export default function BookingSummary({
@@ -27,6 +28,8 @@ export default function BookingSummary({
 
   onIncrease,
   onDecrease,
+  
+  onCheckout,
 
 }: Props) {
   
@@ -148,45 +151,65 @@ export default function BookingSummary({
         </div>
       )}
         {/* BASIC DETAILS */}
-        <div className="
-          space-y-3
-        ">
-          <div className="
-            flex
-            justify-between
-          ">
-            <span className="text-gray-500">
-              Group Type
-            </span>
-            <span className="font-medium">
-              {group?.name ?? "-"}
-            </span>
+<div className="rounded-2xl border border-gray-200 bg-gradient-to-r from-blue-50 to-white p-5">
 
-          </div>
-          <div className="
-            flex
-            justify-between
-          ">
-            <span className="text-gray-500">
-              Package
-            </span>
-            <span className="font-medium">
-              {pkg?.name ?? "-"}
-            </span>
-          </div>
-          <div className="
-            flex
-            justify-between
-          ">
-            <span className="text-gray-500">
-              Participants
-            </span>
-            <span className="font-medium">
-              {participants}
-            </span>
+  <div className="flex items-center gap-4">
 
-          </div>
-        </div>
+    {/* Icon */}
+    <div className="
+      flex
+      h-12
+      w-12
+      items-center
+      justify-center
+      rounded-xl
+      bg-blue-600
+      text-white
+      shadow-sm
+    ">
+      <UsersRound size={22} />
+    </div>
+
+
+    {/* Content */}
+    <div className="flex-1">
+
+      <p className="
+        text-sm
+        text-gray-500
+      ">
+        Group Type
+      </p>
+
+
+      <h3 className="
+        mt-1
+        text-lg
+        font-semibold
+        text-gray-900
+      ">
+        {group?.name ?? "Not Selected"}
+      </h3>
+
+    </div>
+
+
+    {/* Status Badge */}
+    <div className="
+      rounded-full
+      bg-green-100
+      px-3
+      py-1
+      text-xs
+      font-medium
+      text-green-700
+    ">
+      Active
+    </div>
+
+  </div>
+
+</div>
         {/* TICKETS */}
         <div className="
           border-t
@@ -430,6 +453,7 @@ export default function BookingSummary({
   <button
     type="button"
     disabled={items.length === 0}
+    onClick={onCheckout}
     className="
       flex
       w-full

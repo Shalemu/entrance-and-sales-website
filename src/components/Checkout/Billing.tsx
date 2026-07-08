@@ -1,140 +1,115 @@
+"use client";
+
 import React from "react";
+import {
+  User,
+  Phone,
+  Mail,
+  MapPin,
+  ShieldCheck,
+} from "lucide-react";
 
-const Billing = () => {
+type Props = {
+  customer?: any;
+};
+
+export default function Billing({
+  customer,
+}: Props) {
   return (
-    <div className="mt-9">
-      <h2 className="font-medium text-dark text-xl sm:text-2xl mb-5.5">
-        Billing details
-      </h2>
+    <div>
+      {/* Title */}
+      <div className="mb-5">
+        <h2 className="text-xl font-bold text-dark">
+          Billing Information
+        </h2>
 
-      <div className="bg-white shadow-1 rounded-[10px] p-4 sm:p-8.5">
-        <div className="flex flex-col lg:flex-row gap-5 sm:gap-8 mb-5">
-          <div className="w-full">
-            <label htmlFor="firstName" className="block mb-2.5">
-              First Name <span className="text-red">*</span>
-            </label>
-
-            <input
-              type="text"
-              name="firstName"
-              id="firstName"
-             
-              className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
-            />
-          </div>
-
-          <div className="w-full">
-            <label htmlFor="lastName" className="block mb-2.5">
-              Last Name <span className="text-red">*</span>
-            </label>
-
-            <input
-              type="text"
-              name="lastName"
-              id="lastName"
-              className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
-            />
-          </div>
-        </div>
-
-        <div className="mb-5">
-          <label htmlFor="companyName" className="block mb-2.5">
-            Company Name
-          </label>
-
-          <input
-            type="text"
-            name="companyName"
-            id="companyName"
-            className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
-          />
-        </div>
-
-        <div className="mb-5">
-        <label htmlFor="countryName" className="block mb-2.5">
-          Country / Region
-          <span className="text-red">*</span>
-        </label>
-
-        <input
-          type="text"
-          id="countryName"
-          name="countryName"
-          placeholder="e.g. Tanzania, Dar es Salaam"
-          className="w-full bg-gray-1 rounded-md border border-gray-3 text-dark-4 py-3 px-5 duration-200 outline-none focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
-        />
+        <p className="text-sm text-gray-500 mt-1">
+          Customer details for this booking.
+        </p>
       </div>
-        
-        <div className="mb-5">
-          <label htmlFor="phone" className="block mb-2.5">
-            Phone <span className="text-red">*</span>
-          </label>
 
-          <input
-            type="text"
-            name="phone"
-            id="phone"
-            className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
-          />
-        </div>
-
-        <div className="mb-5.5">
-          <label htmlFor="email" className="block mb-2.5">
-            Email Address <span className="text-red">*</span>
-          </label>
-
-          <input
-            type="email"
-            name="email"
-            id="email"
-            className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="checkboxLabelTwo"
-            className="text-dark flex cursor-pointer select-none items-center"
-          >
-            <div className="relative">
-              <input
-                type="checkbox"
-                id="checkboxLabelTwo"
-                className="sr-only"
-              />
-              <div className="mr-2 flex h-4 w-4 items-center justify-center rounded border border-gray-4">
-                <span className="opacity-0">
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <rect
-                      x="4"
-                      y="4.00006"
-                      width="16"
-                      height="16"
-                      rx="4"
-                      fill="#3C50E0"
-                    />
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M16.3103 9.25104C16.471 9.41178 16.5612 9.62978 16.5612 9.85707C16.5612 10.0844 16.471 10.3024 16.3103 10.4631L12.0243 14.7491C11.8635 14.9098 11.6455 15.0001 11.4182 15.0001C11.191 15.0001 10.973 14.9098 10.8122 14.7491L8.24062 12.1775C8.08448 12.0158 7.99808 11.7993 8.00003 11.5745C8.00199 11.3498 8.09214 11.1348 8.25107 10.9759C8.41 10.8169 8.62499 10.7268 8.84975 10.7248C9.0745 10.7229 9.29103 10.8093 9.4527 10.9654L11.4182 12.931L15.0982 9.25104C15.2589 9.09034 15.4769 9.00006 15.7042 9.00006C15.9315 9.00006 16.1495 9.09034 16.3103 9.25104Z"
-                      fill="white"
-                    />
-                  </svg>
-                </span>
-              </div>
+      {/* Card */}
+      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+        {/* Top Banner */}
+        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-white">
+              <User size={18} />
             </div>
-              I agree to the Terms & Conditions
-          </label>
+
+            <div>
+              <h3 className="font-semibold text-dark">
+                {customer?.first_name} {customer?.last_name}
+              </h3>
+
+              <p className="text-xs text-gray-500">
+                Booking Contact
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700">
+            Verified
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            {/* Phone */}
+            <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
+              <div className="flex items-center gap-2 text-gray-500 text-xs uppercase tracking-wide">
+                <Phone size={13} />
+                Phone
+              </div>
+
+              <p className="mt-1 font-medium text-dark">
+                {customer?.phone || "-"}
+              </p>
+            </div>
+
+            {/* Email */}
+            <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
+              <div className="flex items-center gap-2 text-gray-500 text-xs uppercase tracking-wide">
+                <Mail size={13} />
+                Email
+              </div>
+
+              <p className="mt-1 font-medium text-dark break-all">
+                {customer?.email || "-"}
+              </p>
+            </div>
+
+            {/* Country */}
+            <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 md:col-span-2">
+              <div className="flex items-center gap-2 text-gray-500 text-xs uppercase tracking-wide">
+                <MapPin size={13} />
+                Country / Region
+              </div>
+
+              <p className="mt-1 font-medium text-dark">
+                Tanzania
+              </p>
+            </div>
+          </div>
+
+          {/* Terms */}
+          <div className="mt-5 flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
+            <ShieldCheck
+              size={18}
+              className="text-blue-600 mt-0.5"
+            />
+
+            <p className="text-sm text-gray-700">
+              By proceeding with this booking, you agree to our
+              Terms & Conditions and confirm that the information
+              provided is accurate.
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default Billing;
+}

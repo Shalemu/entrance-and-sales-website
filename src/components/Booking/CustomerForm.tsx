@@ -6,6 +6,7 @@ import { User, Users, Building2 } from "lucide-react";
 import IndividualForm from "./IndividualForm";
 import FamilyForm from "./FamilyForm";
 import CorporateForm from "./CorporateForm";
+import { useBookingCart } from "@/context/BookingCartContext";
 
 
 type Props = {
@@ -16,6 +17,7 @@ type Props = {
 export default function CustomerForm({ 
   onSuccess,
   onCustomerSaved,
+
   
  }: Props) {
   const [type, setType] = useState("individual");
@@ -38,6 +40,10 @@ export default function CustomerForm({
       icon: <Building2 size={16} />,
     },
   ];
+  
+    const {
+ setCustomer
+}=useBookingCart();
 
  const handleSuccess = () => {
   setIsLoading(true);

@@ -4,6 +4,7 @@ import { useState } from "react";
 import FormInput from "../Common/FormInput";
 import { createCustomer, CustomerType } from "@/lib/customer-api";
 import SuccessCard from "../Common/SuccessCard";
+import { useBookingCart } from "@/context/BookingCartContext";
 
 type Props = {
   type: CustomerType;
@@ -32,7 +33,7 @@ export default function CorporateForm({
       [e.target.name]: e.target.value,
     });
   };
-
+const { setCustomer } = useBookingCart();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -46,6 +47,11 @@ export default function CorporateForm({
       response.data
     );
 
+        // Store customer globally
+    setCustomer(response.data);
+
+    // Existing callback
+    onCustomerSaved(response.data);
       // Show success card
       setShowSuccess(true);
 
