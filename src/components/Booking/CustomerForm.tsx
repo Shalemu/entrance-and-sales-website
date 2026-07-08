@@ -10,9 +10,14 @@ import CorporateForm from "./CorporateForm";
 
 type Props = {
   onSuccess: () => void;
+  onCustomerSaved: (customer: any) => void;
 };
 
-export default function CustomerForm({ onSuccess }: Props) {
+export default function CustomerForm({ 
+  onSuccess,
+  onCustomerSaved,
+  
+ }: Props) {
   const [type, setType] = useState("individual");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -80,6 +85,7 @@ export default function CustomerForm({ onSuccess }: Props) {
             <IndividualForm
               type="individual"
               onSuccess={handleSuccess}
+              onCustomerSaved={onCustomerSaved}
             />
           )}
 
@@ -87,6 +93,7 @@ export default function CustomerForm({ onSuccess }: Props) {
             <FamilyForm
               type="family"
               onSuccess={handleSuccess}
+              onCustomerSaved={onCustomerSaved}
             />
           )}
 
@@ -94,6 +101,7 @@ export default function CustomerForm({ onSuccess }: Props) {
             <CorporateForm
               type="corporate"
               onSuccess={handleSuccess}
+              onCustomerSaved={onCustomerSaved}
             />
           )}
         </div>

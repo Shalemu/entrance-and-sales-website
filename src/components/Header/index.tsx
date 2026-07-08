@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-import { useAppSelector } from "@/redux/store";
-import { useSelector } from "react-redux";
-import { selectTotalPrice } from "@/redux/features/cart-slice";
-
 import { useCartModalContext } from "@/app/context/CartSidebarModalContext";
-
 import BookingDate from "./BookingDate";
 import SupportCard from "./SupportCard";
 import BookingTracker from "./BookingTracker";
@@ -15,9 +9,11 @@ import CartButton from "./CartButton";
 import Navigation from "./Navigation";
 import SocialLinks from "./SocialLinks";
 import MobileMenu from "./MobileMenu";
-
 import { Menu } from "lucide-react";
 import Logo from "./Logo";
+import { useBookingCart } from "@/context/BookingCartContext";
+
+
 
 export default function Header() {
   const [stickyMenu, setStickyMenu] = useState(false);
@@ -29,12 +25,20 @@ export default function Header() {
   );
 
   const { openCartModal } = useCartModalContext();
+  
+  const {
+  items,
+  totalPrice
+}=useBookingCart();
 
-  const products = useAppSelector(
-    (state) => state.cartReducer.items
-  );
 
-  const totalPrice = useSelector(selectTotalPrice);
+const itemCount =
+items.reduce(
+  (sum,item)=>
+    sum + item.quantity,
+  0
+);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -80,11 +84,11 @@ export default function Header() {
 
               <BookingTracker />
 
-              <CartButton
-                itemCount={products.length}
-                totalPrice={totalPrice}
-                onClick={openCartModal}
-              />
+           <CartButton
+          itemCount={itemCount}
+          totalPrice={totalPrice}
+          onClick={openCartModal}
+        />
 
             </div>
 

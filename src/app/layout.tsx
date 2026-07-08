@@ -1,3 +1,4 @@
+import { BookingCartProvider } from "@/context/BookingCartContext";
 import "../app/css/euclid-circular-a-font.css";
 import "../app/css/style.css";
 
@@ -8,7 +9,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <BookingCartProvider>
+        {children}
+        </BookingCartProvider>
+        </body>
     </html>
   );
 }

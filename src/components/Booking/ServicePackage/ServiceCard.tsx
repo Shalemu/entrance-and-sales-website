@@ -1,179 +1,328 @@
 "use client";
 
-import { CheckCircle2, Plus, Minus } from "lucide-react";
-import { useEffect, useState } from "react";
-import { BranchService } from "./types";
-import { getActivePrices, getCurrentPricingRule } from "./utils/pricing";
+import {
+  CheckCircle2,
+  Plus,
+  Minus,
+  CalendarDays,
+  Users
+} from "lucide-react";
+
+import { useState } from "react";
+
+import { BranchService } from "./types/types";
+import {
+  getActivePrices,
+  getCurrentPricingRule
+} from "./utils/pricing";
+
+import BookingDateModal, { BookingData } from "./BookingModal/BookingDateModal";
 
 type Props = {
   service: BranchService;
-  quantity: number;
-  participants: number;
-  onParticipantsChange: (value: number) => void;
-  onAdd: () => void;
-  onRemove: () => void;
+
+  quantity:number;
+
+  onAdd:(booking:BookingData)=>void;
+
+  onRemove:()=>void;
 };
 
 export default function ServiceCard({
   service,
   quantity,
-  participants,
-  onParticipantsChange,
   onAdd,
-  onRemove,
-}: Props) {
-  const rule = getCurrentPricingRule();
+  onRemove
 
-  const activePrices = getActivePrices(service.prices || [], rule);
+}:Props){
 
-  const price = activePrices?.[0] ?? service.prices?.[0];
-  const unitPrice = Number(price?.price || 0);
+const [open,setOpen]=useState(false);
+const rule=getCurrentPricingRule();
+const prices=getActivePrices(
+  service.prices || [],
+  rule
+);
 
-  const min = price?.minimum_quantity ?? 1;
-  const max = price?.maximum_quantity ?? 999;
+const price =
+prices?.[0] ??
+service.prices?.[0];
 
-  const total = unitPrice * quantity;
-  const isInCart = quantity > 0;
 
-  const [inputValue, setInputValue] = useState<string>(
-    participants ? String(participants) : ""
-  );
+const unitPrice=Number(
+price?.price ?? 0
+);
 
-  const [error, setError] = useState<string | null>(null);
+const minParticipants =
+price?.minimum_quantity ?? 1;
+const maxParticipants =
+price?.maximum_quantity ?? 999;
+const selected=quantity>0;
+return (
 
-  useEffect(() => {
-    setInputValue(participants ? String(participants) : "");
-  }, [participants]);
+<>
+<div
+className={`
+rounded-xl
+border
+bg-white
+overflow-hidden
+transition
+hover:shadow-md
 
-  const handleChange = (raw: string) => {
-    setInputValue(raw);
+${
+selected
+?
+"border-blue-500"
+:
+"border-gray-200"
+}
 
-    if (raw === "") {
-      setError(null);
-      return;
-    }
+`}
+>
 
-    const value = Number(raw);
-    if (isNaN(value)) return;
+{/* MAIN */}
+<div className="
+p-4
+flex
+gap-4
+items-start
+">
+{/* ICON */}
 
-    if (value < min || value > max) {
-      setError(`Allowed: ${min} - ${max}`);
-    } else {
-      setError(null);
-      onParticipantsChange(value);
-    }
-  };
+<div
+className="
+h-12
+w-12
+rounded-xl
+bg-blue-50
+flex
+items-center
+justify-center
+text-blue-600
+shrink-0
+"
+>
+<CalendarDays size={24}/>
+</div>
 
-  const handleBlur = () => {
-    if (inputValue === "") {
-      setInputValue(String(min));
-      onParticipantsChange(min);
-      setError(null);
-    }
-  };
+{/* DETAILS */}
+<div className="
+flex-1
+min-w-0
+">
+<div className="
+flex
+justify-between
+gap-3
+">
+<div>
+<h3
+className="
+font-semibold
+text-gray-900
+truncate
+"
+>
+{service.service.name}
+</h3>
+<p
+className="
+text-xs
+text-gray-500
+mt-1
+line-clamp-2
+"
+>
 
-  return (
-    <div
-      className={`rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg ${
-        isInCart ? "border-blue-500/40 ring-1 ring-blue-100" : "border-gray-200"
-      }`}
-    >
-      {/* HEADER */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900">
-            {service.service.name}
-          </h3>
+{
+service.service.description ??
+"No description available"
+}
+</p>
+</div>
+<div
+className="
+text-right
+shrink-0
+"
+>
+<p className="
+text-xs
+text-gray-500
+">
+From
+</p>
+<p
+className="
+font-bold
+text-blue-600
+"
+>
+TZS {unitPrice.toLocaleString()}
+</p>
+</div>
+</div>
 
-          <p className="mt-1 text-sm text-gray-500">
-            {service.service.description ?? "No description available"}
-          </p>
-        </div>
+{/* SMALL INFO */}
 
-        {isInCart && (
-          <CheckCircle2 size={20} className="text-blue-600 mt-1" />
-        )}
-      </div>
+<div
+className="
+mt-3
+flex
+items-center
+gap-4
+text-xs
+text-gray-500
+"
+>
 
-      {/* PARTICIPANTS (MOVED TO TOP) */}
-      {isInCart && (
-        <div className="mt-4 rounded-xl bg-gray-50 p-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-700">
-                Participants
-              </p>
-              <p className="text-xs text-gray-500">
-                Allowed: {min} - {max}
-              </p>
-            </div>
+<span className="flex items-center gap-1">
+  <Users size={15} className="text-gray-500" />
+  {service.participants_per_resource}
+</span>
 
-            <input
-              type="text"
-              inputMode="numeric"
-              value={inputValue}
-              onChange={(e) => handleChange(e.target.value)}
-              onBlur={handleBlur}
-              className={`w-24 rounded-lg border px-3 py-1 text-center text-sm outline-none ${
-                error ? "border-red-400" : "border-gray-200"
-              }`}
-            />
-          </div>
+<span className="text-gray-400">•</span>
 
-          {error && (
-            <p className="mt-2 text-xs text-red-500">{error}</p>
-          )}
-        </div>
-      )}
+<span>
+  {service.service.access_control_type}
+</span>
 
-      {/* PRICE (CLEAN, NO RULE BADGE) */}
-      <div className="mt-5 flex items-end justify-between">
-        <div>
-          <p className="text-xs text-gray-500">Price per booking</p>
-          <p className="text-xl font-semibold text-gray-900">
-            TZS {unitPrice.toLocaleString()}
-          </p>
-        </div>
+{
+selected &&
+<span className="
+flex
+items-center
+gap-1
+text-blue-600
+">
+<CheckCircle2 size={14}/>
+Added
+</span>
+}
 
-        <div className="text-right">
-          <p className="text-xs text-gray-500">Subtotal</p>
-          <p className="text-lg font-semibold text-gray-900">
-            TZS {total.toLocaleString()}
-          </p>
-        </div>
-      </div>
+</div>
 
-      {/* CART CONTROLS */}
-      <div className="mt-6 flex items-center justify-between">
-        {isInCart ? (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onRemove}
-              className="flex h-9 w-9 items-center justify-center rounded-full border hover:bg-gray-100"
-            >
-              <Minus size={16} />
-            </button>
+</div>
 
-            <span className="min-w-[28px] text-center font-semibold">
-              {quantity}
-            </span>
+</div>
 
-            <button
-              onClick={onAdd}
-              className="flex h-9 w-9 items-center justify-center rounded-full border hover:bg-blue-50"
-            >
-              <Plus size={16} />
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={onAdd}
-            className="ml-auto rounded-xl bg-gray-900 px-5 py-2 text-sm font-medium text-white hover:bg-blue-600"
-          >
-            Add to Cart
-          </button>
-        )}
-      </div>
-    </div>
-  );
+{/* FOOTER */}
+<div
+className="
+border-t
+bg-gray-50
+px-4
+py-3
+flex
+justify-between
+items-center
+"
+>
+{
+selected ?
+
+<div className="
+flex
+items-center
+gap-3
+">
+<button
+onClick={onRemove}
+className="
+h-8
+w-8
+rounded-full
+border
+bg-white
+flex
+items-center
+justify-center
+hover:bg-gray-100
+"
+>
+<Minus size={15}/>
+</button>
+<span
+className="
+font-semibold
+text-sm
+"
+>
+{quantity}
+</span>
+<button
+onClick={()=>setOpen(true)}
+className="
+h-8
+w-8
+rounded-full
+bg-blue-600
+text-white
+flex
+items-center
+justify-center
+hover:bg-blue-700
+"
+>
+<Plus size={15}/>
+</button>
+</div>
+:
+<button
+onClick={()=>setOpen(true)}
+className="
+ml-auto
+rounded-lg
+bg-gray-900
+px-5
+py-2
+text-sm
+font-semibold
+text-white
+hover:bg-blue-600
+"
+>
+Add Service
+</button>
+}
+</div>
+</div>
+
+<BookingDateModal
+
+open={open}
+serviceName={
+service.service.name
+}
+minParticipants={
+minParticipants
+}
+maxParticipants={
+maxParticipants
+}
+defaultParticipants={
+minParticipants
+}
+priceMode={
+  service.prices?.[0]?.price_mode ?? "fixed"
+}
+
+onClose={()=>
+setOpen(false)
+}
+
+onConfirm={(booking)=>{
+
+  onAdd(booking);
+
+  setOpen(false);
+
+}}
+
+/>
+
+</>
+
+);
+
 }

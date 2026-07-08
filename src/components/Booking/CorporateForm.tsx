@@ -8,11 +8,13 @@ import SuccessCard from "../Common/SuccessCard";
 type Props = {
   type: CustomerType;
   onSuccess: () => void;
+  onCustomerSaved: (customer: any) => void;
 };
 
 export default function CorporateForm({
   type,
   onSuccess,
+  onCustomerSaved,
 }: Props) {
   const [form, setForm] = useState({
     company_name: "",
@@ -35,7 +37,14 @@ export default function CorporateForm({
     e.preventDefault();
 
     try {
-      await createCustomer(type, form);
+        const response = await createCustomer(
+      type,
+      form
+    );
+
+    onCustomerSaved(
+      response.data
+    );
 
       // Show success card
       setShowSuccess(true);

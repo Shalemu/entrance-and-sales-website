@@ -1,212 +1,347 @@
 "use client";
 
-import { useState } from "react";
-
+import { useState, useEffect  } from "react";
+import { useBookingCart } from "@/context/BookingCartContext";
 import CustomerForm from "./CustomerForm";
 import ServicePackage from "./ServicePackage/ServicePackage";
 import Participants from "./Participants";
 import BookingSummary from "./BookingSummary";
-
-import type { BranchService, Package } from "./ServicePackage/types";
+import type { BranchService, Package } from "./ServicePackage/types/types";
 import type { GroupType } from "./GroupType/Grouptype";
+import { BookingData } from "./ServicePackage/BookingModal/BookingDateModal";
+
 
 export type BookingItem = {
-  service: BranchService;
-  quantity: number;
+  service?: BranchService;
+  package?: Package;
 
-  // per-service participants
+  quantity: number;
   participants: number;
+
+  bookingDate?: string;
+  startTime?: string;
+  endTime?: string;
+
+  adults?: number;
+  children?: number;
 };
 
-export default function Booking() {
-  const [step, setStep] = useState(1);
 
-  const [selectedGroup, setSelectedGroup] =
-    useState<GroupType | null>(null);
+export default function Booking(){
 
-  const [selectedPackage, setSelectedPackage] =
-    useState<Package | null>(null);
 
-  const [participants, setParticipants] = useState(1);
+const [step,setStep]=useState(1);
+const [selectedGroup,setSelectedGroup]=
+useState<GroupType|null>(null);
+const [selectedPackage,setSelectedPackage]=
+useState<Package|null>(null);
+const [participants,setParticipants]=
+useState(1);
+const [items,setItems]=
+useState<BookingItem[]>([]);
 
-  const [items, setItems] = useState<BookingItem[]>([]);
+const {
+  setItems:setCartItems
+}=useBookingCart();
 
-  // =========================
-  // ADD SERVICE
-  // =========================
-  const addService = (service: BranchService) => {
-    setItems((prev) => {
-      const existing = prev.find(
-        (item) => item.service.id === service.id
-      );
+useEffect(()=>{
 
-      const min = service.min_participants ?? 1;
-      const max = service.max_participants ?? 999;
+ setCartItems(items);
 
-      if (existing) {
-        return prev.map((item) => {
-          if (item.service.id === service.id) {
-            const newQty = item.quantity + 1;
+},[
+ items,
+ setCartItems
+]);
 
-            if (newQty > max) {
-              alert(`Max ${max} participants allowed`);
-              return item;
-            }
 
-            return {
-              ...item,
-              quantity: newQty,
-            };
-          }
-          return item;
-        });
-      }
+const [customer,setCustomer]=
+useState<any>(null);
+const addService = (
+service:BranchService,
+booking:BookingData
+)=>{
 
-      return [
-        ...prev,
-        {
-          service,
-          quantity: 1,
-          participants: min,
-        },
-      ];
-    });
-  };
 
-  // =========================
-  // INCREASE QUANTITY
-  // =========================
-  const increaseQuantity = (serviceId: number) => {
-    setItems((prev) =>
-      prev.map((item) => {
-        if (item.service.id !== serviceId) return item;
+setItems(prev=>{
 
-        const max =
-          item.service.max_participants ?? 999;
 
-        if (item.quantity + 1 > max) {
-          alert(`Max ${max} reached`);
-          return item;
-        }
+const existing =
+prev.find(
+item=>item.service?.id === service.id
+);
 
-        return {
-          ...item,
-          quantity: item.quantity + 1,
-        };
-      })
+
+
+if(existing){
+
+
+return prev.map(item=>{
+
+
+if(item.service?.id === service.id){
+
+
+return {
+
+...item,
+
+quantity:item.quantity + 1
+
+};
+
+
+}
+
+
+return item;
+
+
+});
+
+
+}
+
+
+
+return [
+
+...prev,
+
+{
+
+service,
+quantity:1,
+
+participants:booking.participants,
+
+bookingDate:booking.bookingDate,
+
+startTime:booking.startTime,
+
+endTime:booking.endTime,
+
+adults:booking.adults ?? 0,
+
+children:booking.children ?? 0,
+
+}
+
+];
+
+
+});
+
+};
+
+const addPackage = (
+  pkg: Package,
+  booking: BookingData
+) => {
+
+  setItems((prev)=>{
+
+    const exists = prev.find(
+      item=>item.package?.id === pkg.id
     );
-  };
 
-  // =========================
-  // DECREASE QUANTITY
-  // =========================
-  const decreaseQuantity = (serviceId: number) => {
-    setItems((prev) =>
-      prev
-        .map((item) => {
-          if (item.service.id !== serviceId) return item;
+
+    if(exists){
+
+      return prev.map(item=>{
+
+        if(item.package?.id === pkg.id){
 
           return {
             ...item,
-            quantity: item.quantity - 1,
+            quantity:item.quantity + 1
           };
-        })
-        .filter((item) => item.quantity > 0)
-    );
-  };
 
-  // =========================
-  // UPDATE PARTICIPANTS PER SERVICE
-  // =========================
-  const updateServiceParticipants = (
-    serviceId: number,
-    value: number
-  ) => {
-    setItems((prev) =>
-      prev.map((item) => {
-        if (item.service.id !== serviceId) return item;
-
-        const min =
-          item.service.min_participants ?? 1;
-
-        const max =
-          item.service.max_participants ?? 999;
-
-        if (value < min || value > max) {
-          alert(`Allowed range: ${min} - ${max}`);
-          return item;
         }
 
-        return {
-          ...item,
-          participants: value,
-        };
-      })
-    );
-  };
+        return item;
 
-  // =========================
-  // REMOVE SERVICE
-  // =========================
-  const removeService = (serviceId: number) => {
-    setItems((prev) =>
-      prev.filter(
-        (item) => item.service.id !== serviceId
-      )
-    );
-  };
+      });
 
-  return (
-    <section className="py-16">
-      <div className="mx-auto max-w-7xl px-4">
-        <h1 className="mb-8 text-3xl font-bold text-gray-900">
-          Create Booking
-        </h1>
+    }
 
-        <div className="grid gap-8 lg:grid-cols-3">
-          {/* LEFT */}
-          <div className="space-y-6 lg:col-span-2">
-            {step === 1 && (
-              <CustomerForm onSuccess={() => setStep(2)} />
-            )}
+    return [
+      ...prev,
+      {
+        package: pkg,
+        quantity:1,
+        participants:booking.participants,
 
-            {step === 2 && (
-              <ServicePackage
-                selectedGroup={selectedGroup}
-                setSelectedGroup={setSelectedGroup}
-                selectedPackage={selectedPackage}
-                setSelectedPackage={setSelectedPackage}
-                items={items}
-                addService={addService}
-                removeService={removeService}
-                updateServiceParticipants={
-                  updateServiceParticipants
-                }
-                onSuccess={() => setStep(3)}
-              />
-            )}
+        bookingDate:booking.bookingDate,
+        startTime:booking.startTime,
+        endTime:booking.endTime,
 
-            {step === 3 && (
-              <Participants
-                value={participants}
-                onChange={setParticipants}
-              />
-            )}
-          </div>
+        adults:booking.adults ?? 0,
+        children:booking.children ?? 0,
+      }
+    ];
 
-          {/* RIGHT */}
-          <div>
-            <BookingSummary
-              group={selectedGroup}
-              pkg={selectedPackage}
-              participants={participants}
-              items={items}
-              onIncrease={increaseQuantity}
-              onDecrease={decreaseQuantity}
-            />
-          </div>
-        </div>
-      </div>
-    </section>
+  });
+
+};
+const removeService = (
+  serviceId: number
+) => {
+
+  setItems(prev =>
+    prev.filter(
+      item => item.service?.id !== serviceId
+    )
   );
+
+};
+
+const removePackage = (
+ packageId:number
+)=>{
+
+ setItems(prev=>
+   prev.filter(
+    item=>item.package?.id !== packageId
+   )
+ );
+
+ setSelectedPackage(null);
+
+};
+
+const increaseQuantity=(id:number)=>{
+setItems(prev=>
+prev.map(item=>{
+if(
+item.service?.id === id
+||
+item.package?.id === id
+){
+
+return {
+...item,
+
+quantity:item.quantity + 1
+
+};
+
+}
+return item;
+})
+);
+
+};
+const decreaseQuantity=(id:number)=>{
+setItems(prev=>
+prev.map(item=>{
+if(
+item.service?.id === id
+||
+item.package?.id === id
+){
+
+return {
+
+...item,
+
+quantity:item.quantity - 1
+
+};
+
+}
+
+return item;
+
+})
+.filter(
+item=>item.quantity>0
+)
+);
+
+};
+
+const updateServiceParticipants = (
+  serviceId:number,
+  value:number
+) => {
+  setItems(prev =>
+    prev.map(item => {
+
+      if(item.service?.id !== serviceId)
+        return item;
+      return {
+        ...item,
+        participants:value
+      };
+
+    })
+  );
+
+};
+
+return (
+
+<section className="py-16">
+
+<div className="mx-auto max-w-7xl px-4">
+
+<h1 className="mb-8 text-3xl font-bold">
+Create Booking
+</h1>
+<div className="grid gap-8 lg:grid-cols-3">
+{/* LEFT */}
+<div className="space-y-6 lg:col-span-2">
+
+{
+step===1 &&
+<CustomerForm
+onCustomerSaved={setCustomer}
+
+onSuccess={()=>
+setStep(2)
+}
+/>
+}
+{
+step===2 &&
+<ServicePackage
+  selectedGroup={selectedGroup}
+  setSelectedGroup={setSelectedGroup}
+  selectedPackage={selectedPackage}
+  setSelectedPackage={setSelectedPackage}
+  items={items}
+  addService={addService}
+  addPackage={addPackage}
+  removeService={removeService}
+  removePackage={removePackage}
+  updateServiceParticipants={
+    updateServiceParticipants
+  }
+
+/>
+}
+{
+step===3 &&
+<Participants
+value={participants}
+onChange={setParticipants}
+/>
+}
+</div>
+{/* SUMMARY */}
+<div>
+<BookingSummary
+customer={customer}
+group={selectedGroup}
+pkg={selectedPackage}
+participants={participants}
+items={items}
+onIncrease={increaseQuantity}
+onDecrease={decreaseQuantity}
+/>
+</div>
+</div>
+</div>
+</section>
+);
 }

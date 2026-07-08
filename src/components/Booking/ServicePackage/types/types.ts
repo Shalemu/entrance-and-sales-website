@@ -11,6 +11,11 @@ export interface ServicePrice {
   pricing_rule: string;
   group_type: string | null;
   age_category: string | null;
+
+  price_mode: 
+    | "fixed"
+    | "per_person"
+    | "per_adult_child";
 }
 
 export interface BranchService {
@@ -55,7 +60,11 @@ export type Package = {
   id: number;
   name: string;
   slug: string;
-  pricing_mode: string;
+  pricing_mode:
+  | "fixed"
+  | "per_person"
+  | "per_adult_child";
+  
   minimum_guests: number;
   maximum_guests: number;
   status: boolean;

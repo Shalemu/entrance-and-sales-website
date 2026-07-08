@@ -8,11 +8,13 @@ import SuccessCard from "../Common/SuccessCard";
 type Props = {
   type: CustomerType;
   onSuccess: () => void;
+  onCustomerSaved: (customer: any) => void;
 };
 
 export default function FamilyForm({
   type,
   onSuccess,
+  onCustomerSaved,
 }: Props) {
   const [form, setForm] = useState({
     family_name: "",
@@ -31,33 +33,38 @@ export default function FamilyForm({
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+const handleSubmit = async (
+  e: React.FormEvent<HTMLFormElement>
+) => {
+  e.preventDefault();
 
-    try {
-      const names = form.family_name.trim().split(" ");
+  try {
 
-      await createCustomer(type, {
-        first_name: names[0] || "",
-        last_name: names.slice(1).join(" ") || names[0] || "",
+    const response = await createCustomer(
+      type,
+      {
+        company_name: form.family_name,
         email: form.email,
         phone: form.phone,
         id_number: form.id_number,
         address: form.address,
-      });
+      }
+    );
 
-   
-    // Show success card
-      setShowSuccess(true);
-      // Automatically continue after 2 seconds
-      setTimeout(() => {
-        onSuccess();
-      }, 3000);
+    onCustomerSaved(
+      response.data ?? response
+    );
 
-    } catch (err: any) {
-      alert(err.message || "Something went wrong");
-    }
-  };
+    setShowSuccess(true);
+
+    setTimeout(() => {
+      onSuccess();
+    }, 3000);
+
+  } catch (err: any) {
+    alert(err.message || "Something went wrong");
+  }
+};
   if (showSuccess) {
   return <SuccessCard />;
 }

@@ -8,11 +8,14 @@ import SuccessCard from "../Common/SuccessCard";
 type Props = {
   type: CustomerType;
   onSuccess: () => void;
+  onCustomerSaved: (customer: any) => void;
 };
 
 export default function IndividualForm({
   type,
   onSuccess,
+  onCustomerSaved,
+  
 }: Props) {
   const [form, setForm] = useState({
     first_name: "",
@@ -31,24 +34,34 @@ export default function IndividualForm({
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (
+  e: React.FormEvent<HTMLFormElement>
+) => {
+  e.preventDefault();
 
-    try {
-      await createCustomer(type, form);
+  try {
 
-      // Show success card
-      setShowSuccess(true);
+    const response = await createCustomer(
+      type,
+      form
+    );
 
-      // Move to next step after 2 seconds
-      setTimeout(() => {
-        onSuccess();
-      }, 3000);
-    } catch (err: any) {
-      alert(err.message || "Something went wrong");
-    }
-  };
+    onCustomerSaved(
+      response.data
+    );
+    
+    // save customer to Booking state
+   
+    setShowSuccess(true);
 
+    setTimeout(() => {
+      onSuccess();
+    }, 3000);
+
+  } catch (err: any) {
+    alert(err.message || "Something went wrong");
+  }
+};
   // Show success screen instead of the form
   if (showSuccess) {
   return <SuccessCard />;
