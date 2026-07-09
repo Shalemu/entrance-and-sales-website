@@ -33,7 +33,9 @@ type Props = {
     | "per_adult_child";
     
   onClose: () => void;
-  onConfirm: (data: BookingData) => void;
+ onConfirm: (
+  data: BookingData
+) => void | Promise<void>;
 };
 
 export default function BookingDateModal({
@@ -61,6 +63,8 @@ export default function BookingDateModal({
 
     const [error, setError] =
         useState<string | null>(null);
+        
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
 
@@ -88,59 +92,67 @@ export default function BookingDateModal({
     ]);
 
   if(!open) return null;
-  const submit = () => {
-    if(!bookingDate){
+  const submit = async () => {
 
-      setError(
-        "Please select booking date"
-      );
+  if(!bookingDate){
+    setError("Please select booking date");
+    return;
+  }
 
-      return;
-    }
-    if(!startTime || !endTime){
+  if(!startTime || !endTime){
+    setError("Please select booking time");
+    return;
+  }
 
-      setError(
-        "Please select booking time"
-      );
+  if(endTime <= startTime){
+    setError("End time must be after start time");
+    return;
+  }
 
-      return;
-    }
-    if(endTime <= startTime){
+  if(
+    participants < minParticipants ||
+    participants > maxParticipants
+  ){
+    setError(
+      `Participants ${minParticipants}-${maxParticipants}`
+    );
+    return;
+  }
 
-      setError(
-        "End time must be after start time"
-      );
 
-      return;
-    }
-    if(
-      participants < minParticipants ||
-      participants > maxParticipants
-    ){
+  try {
 
-      setError(
-        `Participants ${minParticipants}-${maxParticipants}`
-      );
+    setSubmitting(true);
 
-      return;
-    }
-        onConfirm({
 
-        bookingDate,
+    await onConfirm({
 
-        startTime,
+      bookingDate,
+      startTime,
+      endTime,
+      participants,
+      adults,
+      children
 
-        endTime,
+    });
 
-        participants,
 
-        adults,
+    // small delay so user sees loading
+    await new Promise(
+      resolve => setTimeout(resolve, 600)
+    );
 
-        children
 
-        });
+    onClose();
 
-  };
+
+  } finally {
+
+    setSubmitting(false);
+
+  }
+
+};
   return (
     <div
       className="
@@ -466,24 +478,56 @@ export default function BookingDateModal({
               Cancel
             </button>
             <button
-              onClick={submit}
-              className="
-              flex-1
-              rounded-xl
-              bg-blue-600
-              px-7
-              py-2.5
-              text-sm
-              font-semibold
-              text-white
-              shadow-sm
-              transition
-              hover:bg-blue-700
-              sm:flex-none
-              "
-            >
-              Add Booking
-            </button>
+  onClick={submit}
+  disabled={submitting}
+  className="
+  flex-1
+  rounded-xl
+  bg-blue-600
+  px-7
+  py-2.5
+  text-sm
+  font-semibold
+  text-white
+  shadow-sm
+  transition
+  hover:bg-blue-700
+  disabled:cursor-not-allowed
+  disabled:opacity-70
+  sm:flex-none
+  "
+>
+
+        {
+        submitting ?
+        <div className="
+        flex
+        items-center
+        gap-2
+        ">
+
+        <span
+        className="
+        h-4
+        w-4
+        animate-spin
+        rounded-full
+        border-2
+        border-white
+        border-t-transparent
+        "
+        />
+
+        Adding...
+
+        </div>
+
+        :
+
+        "Add Booking"
+
+        }
+        </button>
           </div>
         </div>
       </div>

@@ -17,22 +17,25 @@ import {
 } from "./utils/pricing";
 
 import BookingDateModal, { BookingData } from "./BookingModal/BookingDateModal";
+import { toast } from "sonner";
 
 type Props = {
   service: BranchService;
 
   quantity:number;
-
-  onAdd:(booking:BookingData)=>void;
+  onAdd:(booking:BookingData)=>void | Promise<void>;
 
   onRemove:()=>void;
+  
+ 
 };
 
 export default function ServiceCard({
   service,
   quantity,
   onAdd,
-  onRemove
+  onRemove,
+ 
 
 }:Props){
 
@@ -57,6 +60,7 @@ price?.minimum_quantity ?? 1;
 const maxParticipants =
 price?.maximum_quantity ?? 999;
 const selected=quantity>0;
+
 return (
 
 <>
@@ -291,31 +295,38 @@ Add Service
 <BookingDateModal
 
 open={open}
+
 serviceName={
-service.service.name
+  service.service.name
 }
+
 minParticipants={
-minParticipants
+  minParticipants
 }
+
 maxParticipants={
-maxParticipants
+  maxParticipants
 }
+
 defaultParticipants={
-minParticipants
+  minParticipants
 }
+
 priceMode={
   service.prices?.[0]?.price_mode ?? "fixed"
 }
 
-onClose={()=>
-setOpen(false)
+onClose={() =>
+  setOpen(false)
 }
 
-onConfirm={(booking)=>{
+onConfirm={async (booking)=>{
 
-  onAdd(booking);
+  await onAdd(booking);
 
-  setOpen(false);
+  toast.success(
+    `${service.service.name} added to cart`
+  );
 
 }}
 
@@ -324,5 +335,6 @@ onConfirm={(booking)=>{
 </>
 
 );
+
 
 }

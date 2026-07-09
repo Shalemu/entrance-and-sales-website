@@ -22,6 +22,8 @@ import type {
   BookingData,
 } from "./types/booking";
 import { BookingItem } from "..";
+import ServiceCardSkeleton from "./ServiceCardSkeleton";
+import PackageCardSkeleton from "./PackageCardSkeleton";
 
 type Props = {
   selectedGroup: GroupType | null;
@@ -98,10 +100,12 @@ export default function ServicePackage({
     groups
   } = useGroup();
   const {
-    services
+    services,
+    loading: servicesLoading
   } = useServices();
   const {
-    packages
+    packages,
+    loading: packagesLoading 
   } = usePackages();
 
   return (
@@ -154,108 +158,129 @@ export default function ServicePackage({
         "
       >
         {/* SERVICES */}
-        <section>
-          <h2
-            className="
-            text-2xl
-            font-bold
-            text-gray-900
-            "
-          >
-            Choose Services
-          </h2>
-          <div
-            className="
-            mt-6
-            grid
-            gap-6
-            lg:grid-cols-2
-            "
-          >
-            {
-              services.map(
-                (service)=>{
+<section>
+  <h2
+    className="
+    text-2xl
+    font-bold
+    text-gray-900
+    "
+  >
+    Choose Services
+  </h2>
+  <div
+    className="
+    mt-6
+    grid
+    gap-6
+    lg:grid-cols-2
+    "
+  >
+    {
+      servicesLoading ?
+      // LOADING STATE
+      Array.from({
+        length: 4
+      }).map((_, index)=>(
+        <ServiceCardSkeleton
+          key={index}
+        />
+      ))
+      :
+      // DATA STATE
+      services.map(
+        (service)=>{
+          const inCart =
+            items.find(
+              (item)=>
+              item.service?.id === service.id
+            );
+          return (
+            <ServiceCard
+  key={service.id}
+  service={service}
+  quantity={inCart?.quantity ?? 0}
+  onAdd={async (booking)=>{
+
+    await addService(
+      service,
+      booking
+    );
+
+  }}
+  onRemove={()=>{
+
+    removeService(
+      service.id
+    );
+
+  }}
+/>
+          );
+        }
+      )
+    }
+  </div>
+</section>
+
+       {/* PACKAGES */}
+<section>
+
+  <h2
+    className="
+    text-2xl
+    font-bold
+    text-gray-900
+    "
+  >
+    Select Package
+  </h2>
 
 
-                  const inCart =
-                    items.find(
-                      (item)=>
-                      item.service?.id === service.id
-                    );
-                  return (
+  <div
+    className="
+    mt-6
+    space-y-5
+    "
+  >
 
-                    <ServiceCard
+    {
+      packagesLoading ?
 
-                      key={
-                        service.id
-                      }
-                      service={
-                        service
-                      }
-                      quantity={
-                        inCart?.quantity ?? 0
-                      }
-                      onAdd={
-                        (booking)=>{
-                          addService(
-                            service,
-                            booking
-                          );
-                        }
-                      }
-                      onRemove={
-                        ()=>{
-                          removeService(
-                            service.id
-                          );
-                        }
-                      }
-                    />
-                  );
-                }
-              )
+      // LOADING STATE
+      Array.from({
+        length: 3
+      }).map((_, index)=>(
+
+        <PackageCardSkeleton
+          key={index}
+        />
+
+      ))
+
+      :
+
+      // DATA STATE
+      packages.map(
+        (pkg)=>(
+          <PackageCard
+            key={
+              pkg.id
             }
-          </div>
-        </section>
-
-        {/* PACKAGES */}
-        <section>
-          <h2
-            className="
-            text-2xl
-            font-bold
-            text-gray-900
-            "
-          >
-            Select Package
-          </h2>
-          <div
-            className="
-            mt-6
-            space-y-5
-            "
-          >
-            {
-              packages.map(
-                (pkg)=>(
-
-             <PackageCard
-              key={pkg.id}
-
-              package={pkg}
-
-              selected={
-                selectedPackage?.id === pkg.id
-              }
-
-              quantity={
-                items.find(
-                  (item) => item.package?.id === pkg.id
-                )?.quantity ?? 0
-              }
-
-              onAdd={(booking)=>{
-
+            package={
+              pkg
+            }
+            selected={
+              selectedPackage?.id === pkg.id
+            }
+            quantity={
+              items.find(
+                (item)=>
+                item.package?.id === pkg.id
+              )?.quantity ?? 0
+            }
+            onAdd={
+              (booking)=>{
                 setSelectedPackage(pkg);
 
                 addPackage(
@@ -263,22 +288,22 @@ export default function ServicePackage({
                   booking
                 );
 
-              }}
-
-              onRemove={()=>{
+              }
+            }
+            onRemove={
+              ()=>{
 
                 removePackage(
                   pkg.id
                 );
-
-              }}
-
-            />
-                )
-              )
+              }
             }
-          </div>
-        </section>
+          />
+        )
+      )
+    }
+  </div>
+</section>
       </div>
       {/* <TrustFooter /> */}
     </div>

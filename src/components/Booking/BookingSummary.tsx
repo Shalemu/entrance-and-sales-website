@@ -5,6 +5,7 @@ import { ArrowRight, CreditCard, Minus, Plus, UsersRound } from "lucide-react";
 import type { GroupType } from "./GroupType/Grouptype";
 import type { Package } from "./ServicePackage/types/types";
 import type { BookingItem } from "../Booking";
+import CheckoutButton from "./CheckoutButton";
 
 
 type Props = {
@@ -16,6 +17,7 @@ type Props = {
   onIncrease: (serviceId: number) => void;
   onDecrease: (serviceId: number) => void;
   onCheckout: () => void; 
+   checkoutLoading: boolean; 
 };
 
 export default function BookingSummary({
@@ -30,6 +32,7 @@ export default function BookingSummary({
   onDecrease,
   
   onCheckout,
+  checkoutLoading, 
 
 }: Props) {
   
@@ -44,6 +47,7 @@ export default function BookingSummary({
   const price = Number(
     priceInfo?.price ?? 0
   );
+
 
 
   const priceMode =
@@ -449,32 +453,15 @@ export default function BookingSummary({
   </div>
 
 
-  {/* CHECKOUT BUTTON */}
-  <button
-    type="button"
-    disabled={items.length === 0}
-    onClick={onCheckout}
-    className="
-      flex
-      w-full
-      items-center
-      justify-center
-      gap-2
-      rounded-xl
-      bg-blue-600
-      px-6
-      py-3
-      font-semibold
-      text-white
-      transition
-      hover:bg-blue-700
-      disabled:cursor-not-allowed
-      disabled:opacity-50
-    "
-  >
-    Proceed to Checkout
-    <CreditCard size={18} />
-  </button>
+<CheckoutButton
+
+disabled={items.length===0}
+
+loading={checkoutLoading}
+
+onClick={onCheckout}
+
+/>
 
 </div>
       </div>

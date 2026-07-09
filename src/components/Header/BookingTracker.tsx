@@ -6,7 +6,7 @@ import { SearchCheck } from "lucide-react";
 export default function BookingTracker() {
   return (
     <Link
-      href="/booking"
+      href="/booking/trackBooking"
       className="hidden xl:flex items-center gap-3 hover:text-blue-600 transition-colors"
     >
       <SearchCheck

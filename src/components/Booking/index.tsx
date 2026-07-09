@@ -12,6 +12,10 @@ import type { BranchService, Package } from "./ServicePackage/types/types";
 import type { GroupType } from "./GroupType/Grouptype";
 import type { BookingData } from "./ServicePackage/BookingModal/BookingDateModal";
 import { toast, Toaster } from "sonner";
+import { useRouter } from "next/navigation";
+import { useCreateBooking } from "./hook/useCreateBooking";
+import ReferenceNumber from "./ReferenceNumber";
+
 
 export type BookingItem = {
   service?: BranchService;
@@ -29,8 +33,13 @@ export type BookingItem = {
 export default function Booking(){
 
 const [step,setStep] = useState(1);
+const router = useRouter();
 const [completedSteps,setCompletedSteps] =
 useState<number[]>([]);
+const {
+  createBooking,
+  loading: checkoutLoading
+} = useCreateBooking();
 
 const [selectedGroup,setSelectedGroup] =
 useState<GroupType|null>(null);
@@ -71,55 +80,67 @@ prev
  ...prev,
  current
 ]
-
 );
-
 setStep(next);
-
 };
+const addService = async (
+  service: BranchService,
+  booking: BookingData
+) => {
 
-const addService = (
-service:BranchService,
-booking:BookingData
-)=>{
+  setItems(prev => {
 
-setItems(prev=>{
-const existing =
-prev.find(
-item =>
-item.service?.id === service.id
-);
-if(existing){
-return prev.map(item=>{
-if(item.service?.id === service.id){
-return {
-...item,
-quantity:item.quantity + 1
+    const existing =
+      prev.find(
+        item =>
+          item.service?.id === service.id
+      );
 
-};
-}
-return item;
-});
-}
 
-return [
-...prev,
+    if(existing){
 
-{
+      return prev.map(item=>{
 
-service,
+        if(item.service?.id === service.id){
 
-quantity:1,
-participants:booking.participants,
-bookingDate:booking.bookingDate,
-startTime:booking.startTime,
-endTime:booking.endTime,
-adults:booking.adults ?? 0,
-children:booking.children ?? 0
+          return {
+            ...item,
+            quantity:item.quantity + 1
+          };
 
-}
-];
-});
+        }
+
+        return item;
+
+      });
+
+    }
+
+
+    return [
+      ...prev,
+
+      {
+        service,
+        quantity:1,
+        participants:booking.participants,
+        bookingDate:booking.bookingDate,
+        startTime:booking.startTime,
+        endTime:booking.endTime,
+        adults:booking.adults ?? 0,
+        children:booking.children ?? 0
+      }
+
+    ];
+
+  });
+
+
+  // later replace this with API call
+  await new Promise(
+    resolve=>setTimeout(resolve,800)
+  );
+
 };
 
 const addPackage = (
@@ -268,33 +289,45 @@ participants:value
 );
 };
 
+const [bookingNumber, setBookingNumber] = useState<string | null>(null);
 
-const goToPayment = () => {
+const combineDateTime = (
+  date?: string,
+  time?: string
+) => {
+
+  if(!date || !time){
+    return null;
+  }
+
+  return `${date} ${time}:00`;
+
+};
+
+const handleCheckout = async()=>{
+
+  // validation
 
   if (!customer) {
-
     toast.error(
       "Customer details required",
       {
         description:
-          "Please complete your contact information before continuing.",
+        "Please complete your contact information before continuing."
       }
     );
-
     return;
   }
 
 
   if (!selectedGroup) {
-
     toast.warning(
       "Select a group type",
       {
         description:
-          "Please choose a group type before proceeding with your booking.",
+        "Please choose a group type before proceeding."
       }
     );
-
     return;
   }
 
@@ -305,7 +338,7 @@ const goToPayment = () => {
       "No services selected",
       {
         description:
-          "Please select at least one service or package to continue.",
+        "Please select at least one service or package."
       }
     );
 
@@ -313,7 +346,100 @@ const goToPayment = () => {
   }
 
 
- completeStep(3, 4);
+  try {
+
+
+   const payload = {
+
+  branch_id: 1,
+
+  customer_id: customer.id,
+
+  booking_channel_id: 1,
+
+  currency_id: 1,
+
+  group_type_id: selectedGroup.id,
+
+
+  items: items.map(item => ({
+
+    branch_service_id:
+      item.service?.id ?? null,
+
+
+    package_id:
+      item.package?.id ?? null,
+
+
+    service_date:
+      item.bookingDate,
+
+
+    start_datetime:
+      combineDateTime(
+        item.bookingDate,
+        item.startTime
+      ),
+
+
+    end_datetime:
+      combineDateTime(
+        item.bookingDate,
+        item.endTime
+      ),
+
+
+    quantity:
+      item.quantity,
+
+
+    adult_quantity:
+      item.adults ?? 0,
+
+
+    child_quantity:
+      item.children ?? 0,
+
+  }))
+
+};
+
+
+  const booking = await createBooking(payload);
+
+
+setBookingNumber(
+  booking.booking_number
+);
+
+
+toast.success(
+  "Booking created successfully",
+  {
+    description:
+    "Continue to payment."
+  }
+);
+
+
+setStep(3);
+
+  }
+  catch(error){
+
+    console.error(error);
+
+
+    toast.error(
+      "Failed to create booking",
+      {
+        description:
+        "Please try again."
+      }
+    );
+
+  }
 
 };
 
@@ -364,16 +490,16 @@ updateServiceParticipants
 
 {
 step===3 &&
-<Participants
-value={participants}
-onChange={setParticipants}
+<ReferenceNumber
+  value={bookingNumber}
 />
 }
 
 {
 step===4 &&
 <Checkout
-customer={customer}
+ customer={customer}
+ bookingNumber={bookingNumber}
 />
 
 }
@@ -391,7 +517,9 @@ participants={participants}
 items={items}
 onIncrease={increaseQuantity}
 onDecrease={decreaseQuantity}
-onCheckout={goToPayment}
+onCheckout={handleCheckout}
+checkoutLoading={checkoutLoading}
+ 
 />
 </div>
 </div>
@@ -400,3 +528,4 @@ onCheckout={goToPayment}
 );
 
 }
+

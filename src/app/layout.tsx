@@ -2,6 +2,7 @@ import { BookingCartProvider } from "@/context/BookingCartContext";
 import "../app/css/euclid-circular-a-font.css";
 import "../app/css/style.css";
 import { Toaster } from "sonner";
+import { LoadingProvider } from "@/context/LoadingContext";
 
 export default function RootLayout({
   children,
@@ -11,6 +12,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <LoadingProvider>
         <BookingCartProvider>
           {children}
 
@@ -33,6 +35,7 @@ export default function RootLayout({
           />
 
         </BookingCartProvider>
+        </LoadingProvider>
       </body>
     </html>
   );

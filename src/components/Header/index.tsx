@@ -78,7 +78,8 @@ items.reduce(
             </div>
 
             {/* Right */}
-            <div className="hidden xl:flex items-center gap-5">
+            {/* <div className="hidden xl:flex items-center gap-5"> */}
+            <div className="hidden lg:flex items-center gap-5">
 
               <SupportCard />
 
@@ -94,7 +95,7 @@ items.reduce(
 
             {/* Mobile */}
             <button
-              className="xl:hidden rounded-xl border p-2"
+              className="lg:hidden rounded-xl border p-2"
               onClick={() =>
                 setNavigationOpen(true)
               }
@@ -116,6 +117,7 @@ items.reduce(
             />
 
             <SocialLinks />
+  
 
           </div>
 

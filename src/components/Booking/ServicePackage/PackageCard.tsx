@@ -16,6 +16,7 @@ import {
 import BookingDateModal, {
   BookingData
 } from "./BookingModal/BookingDateModal";
+import { toast } from "sonner";
 
 type Props = {
   package: Package;
@@ -176,9 +177,14 @@ pkg.pricing_mode
 onClose={()=>
 setOpen(false)
 }
-onConfirm={(booking)=>{
-onAdd(booking);
-setOpen(false);
+onConfirm={async (booking)=>{
+
+  await onAdd(booking);
+
+  toast.success(
+    `${pkg.name} added to cart`
+  );
+
 }}
 />
 </>
