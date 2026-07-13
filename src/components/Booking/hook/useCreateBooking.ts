@@ -8,6 +8,7 @@ export type BookingResponse = {
   id: number;
   booking_number: string;
   status: string;
+  total_amount: number;
 };
 
 

@@ -290,6 +290,7 @@ participants:value
 };
 
 const [bookingNumber, setBookingNumber] = useState<string | null>(null);
+const [bookingData,setBookingData] = useState<any>(null);
 
 const combineDateTime = (
   date?: string,
@@ -304,16 +305,14 @@ const combineDateTime = (
 
 };
 
-const handleCheckout = async()=>{
-
-  // validation
+const handleCheckout = async () => {
 
   if (!customer) {
     toast.error(
       "Customer details required",
       {
         description:
-        "Please complete your contact information before continuing."
+          "Please complete your contact information before continuing."
       }
     );
     return;
@@ -325,123 +324,118 @@ const handleCheckout = async()=>{
       "Select a group type",
       {
         description:
-        "Please choose a group type before proceeding."
+          "Please choose a group type before proceeding."
       }
     );
     return;
   }
 
 
-  if(items.length === 0){
-
+  if (items.length === 0) {
     toast.info(
       "No services selected",
       {
         description:
-        "Please select at least one service or package."
+          "Please select at least one service or package."
       }
     );
-
     return;
   }
 
 
   try {
 
+    const payload = {
 
-   const payload = {
+      branch_id: 1,
 
-  branch_id: 1,
+      customer_id: customer.id,
 
-  customer_id: customer.id,
+      booking_channel_id: 1,
 
-  booking_channel_id: 1,
+      currency_id: 1,
 
-  currency_id: 1,
-
-  group_type_id: selectedGroup.id,
-
-
-  items: items.map(item => ({
-
-    branch_service_id:
-      item.service?.id ?? null,
+      group_type_id: selectedGroup.id,
 
 
-    package_id:
-      item.package?.id ?? null,
+      items: items.map(item => ({
+
+        branch_service_id:
+          item.service?.id ?? null,
 
 
-    service_date:
-      item.bookingDate,
+        package_id:
+          item.package?.id ?? null,
 
 
-    start_datetime:
-      combineDateTime(
-        item.bookingDate,
-        item.startTime
-      ),
+        service_date:
+          item.bookingDate,
 
 
-    end_datetime:
-      combineDateTime(
-        item.bookingDate,
-        item.endTime
-      ),
+        start_datetime:
+          combineDateTime(
+            item.bookingDate,
+            item.startTime
+          ),
 
 
-    quantity:
-      item.quantity,
+        end_datetime:
+          combineDateTime(
+            item.bookingDate,
+            item.endTime
+          ),
 
 
-    adult_quantity:
-      item.adults ?? 0,
+        quantity:
+          item.quantity,
 
 
-    child_quantity:
-      item.children ?? 0,
-
-  }))
-
-};
+        adult_quantity:
+          item.adults ?? 0,
 
 
-  const booking = await createBooking(payload);
+        child_quantity:
+          item.children ?? 0
+
+      }))
+
+    };
 
 
-setBookingNumber(
-  booking.booking_number
-);
+    const booking =
+      await createBooking(payload);
+
+    setBookingData(booking);
+    setBookingNumber(
+      booking.booking_number
+    );
 
 
-toast.success(
-  "Booking created successfully",
-  {
-    description:
-    "Continue to payment."
-  }
-);
+    toast.success(
+      "Booking created successfully"
+    );
 
 
-setStep(3);
+    // move to checkout step
+    setStep(4);
 
-  }
-  catch(error){
+
+  } catch(error){
 
     console.error(error);
 
-
     toast.error(
-      "Failed to create booking",
+      "Booking creation failed",
       {
         description:
-        "Please try again."
+          "Please try again."
       }
     );
 
   }
 
 };
+
 
 return (
 <section className="py-16">
@@ -496,12 +490,14 @@ step===3 &&
 }
 
 {
-step===4 &&
-<Checkout
- customer={customer}
- bookingNumber={bookingNumber}
-/>
-
+  step === 4 && (
+    <Checkout
+      customer={customer}
+      bookingId={bookingData?.id ?? null}
+      bookingNumber={bookingNumber}
+      bookingAmount={bookingData?.total_amount ?? null}
+    />
+  )
 }
 
 </div>
@@ -528,4 +524,6 @@ checkoutLoading={checkoutLoading}
 );
 
 }
+
+
 

@@ -8,7 +8,6 @@ type Props = {
   onClick:()=>void;
 };
 
-
 export default function CheckoutButton({
   disabled,
   loading,
@@ -16,15 +15,10 @@ export default function CheckoutButton({
 }:Props){
 
 return (
-
 <button
-
 type="button"
-
 disabled={disabled || loading}
-
 onClick={onClick}
-
 className="
 flex
 w-full
@@ -41,7 +35,6 @@ transition
 hover:bg-blue-700
 disabled:opacity-50
 "
-
 >
 
 {
@@ -59,13 +52,9 @@ border-white
 border-t-transparent
 "
 />
-
 Creating Booking...
-
 </>
-
 :
-
 <>
 Proceed to Checkout
 <CreditCard size={18}/>
@@ -73,9 +62,7 @@ Proceed to Checkout
 
 }
 
-
 </button>
-
 
 )
 

@@ -1,19 +1,22 @@
 "use client";
 
 import React, { useState } from "react";
-import PaymentMethod from "./PaymentMethod";
-import { useBookingCart } from "@/context/BookingCartContext";
 import ReferenceNumber from "../Booking/ReferenceNumber";
+import Pesapal from "./Pesapal";
 
 type Props = {
   customer?: any;
-    bookingNumber:string | null;
+  bookingId: number | null;
+  bookingNumber: string | null;
+  bookingAmount: number | null;
 };
 
 
 const Checkout = ({
   customer,
-  bookingNumber
+  bookingId,
+  bookingNumber,
+  bookingAmount
 }: Props) => {
 
 
@@ -21,108 +24,38 @@ const Checkout = ({
     useState(false);
 
 
-  const {
-
-  } = useBookingCart();
-
-
-
-  const handleCheckout = async () => {
-
-    try {
-
-      setCheckoutLoading(true);
-
-      // your checkout logic here
-      // await createBooking();
-
-      await new Promise(
-        resolve => setTimeout(resolve,1000)
-      );
-
-    } finally {
-
-      setCheckoutLoading(false);
-    }
-  };
 
   return (
+
     <>
-
-
+   <ReferenceNumber
+        value={bookingNumber}
+      />
       <section className="overflow-hidden bg-gray-2">
-        <div className="
+        <div
+          className="
           max-w-[1170px]
           w-full
           mx-auto
           px-4
           sm:px-8
           xl:px-0
-        ">
-          <form
-            onSubmit={(e)=>{
+          "
+        >
+          <div className="w-full">
 
-              e.preventDefault();
-
-              handleCheckout();
-
-            }}
-          >
-            <div className="w-full">
-              <PaymentMethod />
-              <button
-                type="submit"
-                disabled={checkoutLoading}
-                className="
-                w-full
-                flex
-                items-center
-                justify-center
-                gap-2
-                font-medium
-                text-white
-                bg-blue
-                py-3
-                px-6
-                rounded-md
-                ease-out
-                duration-200
-                hover:bg-blue-dark
-                mt-7.5
-                disabled:opacity-60
-                disabled:cursor-not-allowed
-                "
-              >
-              {
-                checkoutLoading ?
-
-                <>
-                <span
-                className="
-                h-5
-                w-5
-                animate-spin
-                rounded-full
-                border-2
-                border-white
-                border-t-transparent
-                "
-                />
-                Processing Booking...
-                </>
-                :
-                "Confirm Booking"
-              }
-              </button>
-            </div>
-          </form>
+            <Pesapal
+              customer={customer}
+              bookingId={bookingId}
+              bookingNumber={bookingNumber}
+              bookingAmount={bookingAmount}
+            />
+          </div>
         </div>
       </section>
-      
-         <ReferenceNumber
-     value={bookingNumber}
-   />
     </>
   );
 };
+
+
 export default Checkout;
