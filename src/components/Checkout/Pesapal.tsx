@@ -147,19 +147,6 @@ const Pesapal = ({
 
   }
 
-
-  return (
-
-    <div className="bg-white rounded-lg shadow mt-8 p-10 text-center">
-
-      <h2 className="text-xl font-semibold text-red-600">
-        Unable to load payment page
-      </h2>
-
-    </div>
-
-  );
-
 };
 
 export default Pesapal;

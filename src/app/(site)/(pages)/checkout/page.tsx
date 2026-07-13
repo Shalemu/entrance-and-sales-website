@@ -1,17 +1,32 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Checkout from "@/components/Checkout";
 
-import { Metadata } from "next";
-export const metadata: Metadata = {
-  title: "Checkout Page | NextCommerce Nextjs E-commerce template",
-  description: "This is Checkout Page for NextCommerce Template",
-  // other metadata
-};
-
 const CheckoutPage = () => {
+
+  const [bookingId, setBookingId] = useState<number | null>(null);
+  const [bookingNumber, setBookingNumber] = useState<string | null>(null);
+  const [bookingAmount, setBookingAmount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const booking = JSON.parse(
+      localStorage.getItem("booking") || "{}"
+    );
+
+    setBookingId(booking.id || null);
+    setBookingNumber(booking.number || null);
+    setBookingAmount(booking.amount || null);
+  }, []);
+
+
   return (
     <main>
-      <Checkout />
+      <Checkout
+        bookingId={bookingId}
+        bookingNumber={bookingNumber}
+        bookingAmount={bookingAmount}
+      />
     </main>
   );
 };

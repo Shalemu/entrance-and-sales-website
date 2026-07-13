@@ -17,7 +17,8 @@ export default function ReferenceNumber({
 
 
       <p className="mt-1 text-sm text-gray-500">
-        Use this reference number to complete your payment
+        {/* Use this reference number to complete your payment */}
+        Use this reference number to track your booking
       </p>
 
 
