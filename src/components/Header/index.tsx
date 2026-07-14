@@ -117,8 +117,6 @@ items.reduce(
             />
 
             <SocialLinks />
-  
-
           </div>
 
         </div>
