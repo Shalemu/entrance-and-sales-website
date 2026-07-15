@@ -11,6 +11,8 @@ import {
 
 import BookingParticipants from "./BookingParticipants";
 import BookingTimeFields from "./BookingTimeFields";
+import BookingResourcesModal from "./BookingResourcesModal";
+import { Resource } from "../types/types";
 
 export type BookingData = {
   bookingDate: string;
@@ -19,6 +21,7 @@ export type BookingData = {
   participants: number;
   adults?: number;
   children?: number;
+  resourceId?: number;
 };
 
 type Props = {
@@ -27,6 +30,7 @@ type Props = {
   minParticipants: number;
   maxParticipants: number;
   defaultParticipants: number;
+  resources?: Resource[];
     priceMode:
     | "fixed"
     | "per_person"
@@ -41,6 +45,7 @@ type Props = {
 export default function BookingDateModal({
   open,
   serviceName,
+   resources,
   minParticipants,
   maxParticipants,
   defaultParticipants,
@@ -51,37 +56,27 @@ export default function BookingDateModal({
 
   const [bookingDate, setBookingDate] = useState("");
   const [startTime, setStartTime] = useState("");
+  const [selectedResource,setSelectedResource] =
+  useState<number | null>(null);
   const [endTime, setEndTime] = useState("");
     const [participants, setParticipants] =
         useState(defaultParticipants);
-
     const [adults, setAdults] =
         useState(1);
-
     const [children, setChildren] =
         useState(0);
-
     const [error, setError] =
-        useState<string | null>(null);
-        
+        useState<string | null>(null); 
     const [submitting, setSubmitting] = useState(false);
-
     useEffect(() => {
-
     if(open){
 
         setBookingDate("");
-
         setStartTime("");
-
         setEndTime("");
-
         setParticipants(defaultParticipants);
-
         setAdults(1);
-
         setChildren(0);
-
         setError(null);
 
     }
@@ -119,12 +114,8 @@ export default function BookingDateModal({
     return;
   }
 
-
   try {
-
     setSubmitting(true);
-
-
     await onConfirm({
 
       bookingDate,
@@ -133,23 +124,15 @@ export default function BookingDateModal({
       participants,
       adults,
       children
-
     });
-
-
     // small delay so user sees loading
     await new Promise(
       resolve => setTimeout(resolve, 600)
     );
-
-
     onClose();
 
-
   } finally {
-
     setSubmitting(false);
-
   }
 
 };
@@ -181,7 +164,7 @@ export default function BookingDateModal({
         className="
         relative
         w-full
-        max-w-4xl
+        max-w-7xl
         overflow-hidden
         // rounded-xl
         rounded-lg
@@ -240,187 +223,209 @@ export default function BookingDateModal({
           </button>
         </div>
 
-        {/* Content */}
-        <div
-          className="
-          px-6
-          py-5
-          "
-        >
-           <div
-            className="
-            grid
-            gap-4
-            md:grid-cols-3
-            "
-          >
-            {/* Date */}
+{/* Content */}
+<div
+className="
+px-6
+py-5
+space-y-5
+"
+>
+{/* TOP ROW */}
+<div
+className="
+grid
+grid-cols-12
+gap-4
+"
+>
+{/* DATE */}
+<div
+className="
+col-span-12
+lg:col-span-4
+rounded-2xl
+border
+border-gray-100
+bg-gray-50
+p-3
+"
+>
 
-            <div
-              className="
-              rounded-2xl
-              border
-              border-gray-100
-              bg-gray-50
-              p-3
-              "
-            >
-            <label
-                className="
-                mb-2
-                flex
-                items-center
-                gap-2
-                text-xs
-                font-semibold
-                text-gray-700
-                "
-              >
-                <CalendarDays
-                  size={15}
-                  className="text-blue-600"
-                />
+<label
+className="
+mb-2
+flex
+items-center
+gap-2
+text-xs
+font-semibold
+text-gray-700
+"
+>
+<CalendarDays
+size={15}
+className="text-blue-600"
+/>
+Booking Date
+</label>
+<input
+type="date"
+min={
+new Date()
+.toISOString()
+.split("T")[0]
+}
 
-                Booking Date
+value={bookingDate}
 
-              </label>
-              <input
+onChange={(e)=>
+setBookingDate(e.target.value)
+}
 
-                type="date"
+className="
+h-10
+w-full
+rounded-xl
+border
+border-gray-200
+bg-white
+px-3
+text-sm
+outline-none
+focus:border-blue-500
+"
+/>
+</div>
 
-                min={
-                  new Date()
-                  .toISOString()
-                  .split("T")[0]
-                }
+{/* GUESTS */}
+<div
+className="
+col-span-12
+lg:col-span-4
+rounded-2xl
+border
+border-gray-100
+bg-gray-50
+p-3
+"
+>
+<label
+className="
+mb-2
+flex
+items-center
+gap-2
+text-xs
+font-semibold
+text-gray-700
+"
+>
+<Users
+size={15}
+className="text-blue-600"
+/>
+Guests
+</label>
+<BookingParticipants
+value={participants}
+min={minParticipants}
+max={maxParticipants}
+priceMode={priceMode}
+adults={adults}
+children={children}
+onChange={setParticipants}
+onAdultChange={setAdults}
+onChildrenChange={setChildren}
+/>
+</div>
+{/* TIME */}
+<div
+className="
+col-span-12
+lg:col-span-4
+rounded-2xl
+border
+border-gray-100
+bg-gray-50
+p-3
+"
+>
+<label
+className="
+mb-2
+flex
+items-center
+gap-2
+text-xs
+font-semibold
+text-gray-700
+"
+>
+<Clock3
+size={15}
+className="text-blue-600"
+/>
+Booking Time
+</label>
+<BookingTimeFields
+startTime={startTime}
+endTime={endTime}
+onStartChange={setStartTime}
+onEndChange={setEndTime}
+/>
+</div>
 
-                value={bookingDate}
+</div>
 
-                onChange={(e)=>
-                  setBookingDate(e.target.value)
-                }
+{
+resources &&
+resources.length > 0 &&
 
-                className="
-                h-10
-                w-full
-                rounded-xl
-                border
-                border-gray-200
-                bg-white
-                px-3
-                text-sm
-                outline-none
-                transition
-                focus:border-blue-500
-                "
-              />
-            </div>
+<>
 
-            {/* Guests */}
+{/* RESOURCE ROW */}
 
-            <div
-              className="
-              rounded-2xl
-              border
-              border-gray-100
-              bg-gray-50
-              p-3
-              "
-            >
-              <label
-                className="
-                mb-2
-                flex
-                items-center
-                gap-2
-                text-xs
-                font-semibold
-                text-gray-700
-                "
-              >
-                <Users
-                  size={15}
-                  className="text-blue-600"
-                />
-                Guests
-              </label>
-              <BookingParticipants
-                value={participants}
-                min={minParticipants}
-                max={maxParticipants}
-                priceMode={priceMode}
-                adults={adults}
-                children={children}
-                onChange={setParticipants}
-                onAdultChange={setAdults}
-                onChildrenChange={setChildren}
-                />
-            </div>
-            {/* Time */}
+<div
+className="
+rounded-2xl
+border
+border-gray-100
+bg-gray-50
+p-4
+"
+>
 
-            <div
-              className="
-              rounded-2xl
-              border
-              border-gray-100
-              bg-gray-50
-              p-3
-              "
-            >
-              <label
-                className="
-                mb-2
-                flex
-                items-center
-                gap-2
-                text-xs
-                font-semibold
-                text-gray-700
-                "
-              >
-                <Clock3
-                  size={15}
-                  className="text-blue-600"
-                />
+<BookingResourcesModal
+resources={resources}
+selectedResource={selectedResource}
+onSelect={setSelectedResource}
 
-                Time
+/>
+</div>
+</>
+}
+{
+error &&
 
-              </label>
-              <BookingTimeFields
-
-                startTime={startTime}
-
-                endTime={endTime}
-
-                onStartChange={setStartTime}
-
-                onEndChange={setEndTime}
-              />
-            </div>
-          </div>
-          {error && (
-
-            <div
-              className="
-              mt-4
-              flex
-              items-center
-              gap-2
-              rounded-xl
-              bg-red-50
-              px-4
-              py-2.5
-              text-sm
-              text-red-600
-              "
-            >
-              <X size={15}/>
-
-              {error}
-
-            </div>
-          )}
-        </div>
+<div
+className="
+flex
+items-center
+gap-2
+rounded-xl
+bg-red-50
+px-4
+py-2.5
+text-sm
+text-red-600
+"
+>
+<X size={15}/>
+{error}
+</div>
+}
+</div>
 
         {/* Footer */}
         <div

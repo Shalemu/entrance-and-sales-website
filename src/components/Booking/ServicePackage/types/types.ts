@@ -1,5 +1,25 @@
 import { LucideIcon } from "lucide-react";
 
+export interface ResourceType {
+  id: number;
+  name: string;
+  description: string | null;
+}
+
+
+export interface Resource {
+  id: number;
+  name: string;
+  code: string;
+  resource_usage_type: string;
+  capacity: number;
+  status: string;
+  description: string | null;
+
+  resource_type: ResourceType;
+}
+
+
 export interface ServicePrice {
   id: number;
   tier_order: number;
@@ -35,7 +55,8 @@ export interface BranchService {
     access_control_type: string;
     status: boolean;
   };
-
+  
+  resources: Resource[];  
   prices: ServicePrice[];
   
   min_participants?: number;

@@ -318,19 +318,6 @@ const handleCheckout = async () => {
     return;
   }
 
-
-  if (!selectedGroup) {
-    toast.warning(
-      "Select a group type",
-      {
-        description:
-          "Please choose a group type before proceeding."
-      }
-    );
-    return;
-  }
-
-
   if (items.length === 0) {
     toast.info(
       "No services selected",
@@ -348,36 +335,22 @@ const handleCheckout = async () => {
     const payload = {
 
       branch_id: 1,
-
       customer_id: customer.id,
-
       booking_channel_id: 1,
-
       currency_id: 1,
-
-      group_type_id: selectedGroup.id,
-
-
+      group_type_id: customer?.group?.id ?? null,
       items: items.map(item => ({
-
         branch_service_id:
           item.service?.id ?? null,
-
-
         package_id:
           item.package?.id ?? null,
-
-
         service_date:
           item.bookingDate,
-
-
         start_datetime:
           combineDateTime(
             item.bookingDate,
             item.startTime
           ),
-
 
         end_datetime:
           combineDateTime(
@@ -385,15 +358,10 @@ const handleCheckout = async () => {
             item.endTime
           ),
 
-
         quantity:
           item.quantity,
-
-
         adult_quantity:
           item.adults ?? 0,
-
-
         child_quantity:
           item.children ?? 0
 
@@ -410,20 +378,16 @@ const handleCheckout = async () => {
       booking.booking_number
     );
 
-
     toast.success(
       "Booking created successfully"
     );
 
-
     // move to checkout step
     setStep(4);
-
 
   } catch(error){
 
     console.error(error);
-
     toast.error(
       "Booking creation failed",
       {
@@ -467,8 +431,6 @@ completeStep(1,2);
 {
 step===2 &&
 <ServicePackage
-selectedGroup={selectedGroup}
-setSelectedGroup={setSelectedGroup}
 selectedPackage={selectedPackage}
 setSelectedPackage={setSelectedPackage}
 items={items}
@@ -507,7 +469,6 @@ step===3 &&
 <div>
 <BookingSummary
 customer={customer}
-group={selectedGroup}
 pkg={selectedPackage}
 participants={participants}
 items={items}

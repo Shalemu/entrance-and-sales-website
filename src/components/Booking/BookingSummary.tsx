@@ -2,14 +2,13 @@
 
 import { ArrowRight, CreditCard, Minus, Plus, UsersRound } from "lucide-react";
 
-import type { GroupType } from "./GroupType/Grouptype";
+
 import type { Package } from "./ServicePackage/types/types";
 import type { BookingItem } from "../Booking";
 import CheckoutButton from "./CheckoutButton";
 
 
 type Props = {
-  group: GroupType | null;
   customer?: any;
   pkg: Package | null;
   participants: number;
@@ -22,7 +21,7 @@ type Props = {
 
 export default function BookingSummary({
 
-  group,
+ 
   pkg,
   participants,
   customer,
@@ -175,27 +174,31 @@ export default function BookingSummary({
     </div>
 
 
-    {/* Content */}
-    <div className="flex-1">
+{/* Content */}
+<div className="flex-1">
 
-      <p className="
-        text-sm
-        text-gray-500
-      ">
-        Group Type
-      </p>
+  <p
+    className="
+      text-sm
+      text-gray-500
+    "
+  >
+    Group Type
+  </p>
 
 
-      <h3 className="
-        mt-1
-        text-lg
-        font-semibold
-        text-gray-900
-      ">
-        {group?.name ?? "Not Selected"}
-      </h3>
+  <h3
+    className="
+      mt-1
+      text-lg
+      font-semibold
+      text-gray-900
+    "
+  >
+    {customer?.group?.name ?? "Not Selected"}
+  </h3>
 
-    </div>
+</div>
 
 
     {/* Status Badge */}

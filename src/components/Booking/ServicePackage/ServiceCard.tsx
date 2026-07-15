@@ -5,12 +5,14 @@ import {
   Plus,
   Minus,
   CalendarDays,
-  Users
+  Users,
+  Package,
+  User
 } from "lucide-react";
 
 import { useState } from "react";
 
-import { BranchService } from "./types/types";
+
 import {
   getActivePrices,
   getCurrentPricingRule
@@ -18,9 +20,11 @@ import {
 
 import BookingDateModal, { BookingData } from "./BookingModal/BookingDateModal";
 import { toast } from "sonner";
+import { BranchService, Resource } from "./types/types";
 
 type Props = {
   service: BranchService;
+    resources?: Resource[];
 
   quantity:number;
   onAdd:(booking:BookingData)=>void | Promise<void>;
@@ -210,6 +214,230 @@ Added
 
 </div>
 
+{
+service.resources &&
+service.resources.length > 0 && (
+
+<div
+className="
+mt-5
+mx-4
+mb-4
+rounded-xl
+border
+border-gray-100
+bg-gray-50
+p-4
+"
+>
+
+<div
+className="
+flex
+items-center
+justify-between
+mb-3
+"
+>
+
+<div
+className="
+flex
+items-center
+gap-2
+"
+>
+
+<div
+className="
+h-8
+w-8
+rounded-lg
+bg-blue-50
+flex
+items-center
+justify-center
+text-blue-600
+"
+>
+<Package size={15}/>
+</div>
+
+
+<div>
+
+<p
+className="
+text-sm
+font-semibold
+text-gray-800
+"
+>
+Available Resources
+</p>
+
+<p
+className="
+text-xs
+text-gray-400
+"
+>
+Select from available options
+</p>
+
+</div>
+
+
+</div>
+
+
+
+<span
+className="
+text-xs
+font-medium
+text-blue-600
+bg-blue-50
+px-2.5
+py-1
+rounded-full
+"
+>
+{service.resources.length} Available
+</span>
+
+
+</div>
+
+
+
+<div
+className="
+flex
+flex-wrap
+gap-2
+"
+>
+
+{
+service.resources.map((resource)=>(
+
+<div
+key={resource.id}
+className="
+group
+flex
+items-center
+gap-2
+rounded-xl
+border
+border-gray-100
+bg-white
+px-3
+py-2
+shadow-sm
+transition
+hover:border-blue-300
+hover:shadow-md
+"
+>
+
+
+{/* RESOURCE ICON */}
+
+<div
+className="
+h-7
+w-7
+rounded-lg
+bg-gray-50
+flex
+items-center
+justify-center
+text-blue-600
+group-hover:bg-blue-50
+transition
+"
+>
+
+<Package size={14}/>
+
+</div>
+
+
+
+{/* RESOURCE INFO */}
+
+<div
+className="
+leading-tight
+"
+>
+
+<p
+className="
+text-xs
+font-semibold
+text-gray-800
+"
+>
+{resource.name}
+</p>
+
+
+<div
+className="
+flex
+items-center
+gap-1
+text-[11px]
+text-gray-400
+"
+>
+
+<span>
+{resource.resource_type?.name}
+</span>
+
+
+<span>
+•
+</span>
+
+
+<span
+className="
+flex
+items-center
+gap-1
+"
+>
+<User size={11}/>
+{resource.capacity}
+</span>
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+))
+
+}
+
+
+</div>
+
+
+</div>
+
+)
+}
+
 {/* FOOTER */}
 <div
 className="
@@ -299,6 +527,10 @@ open={open}
 serviceName={
   service.service.name
 }
+
+  resources={
+    service.resources
+  }
 
 minParticipants={
   minParticipants

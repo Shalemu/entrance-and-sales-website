@@ -4,11 +4,6 @@ import JourneyHeader from "./JourneyHeader";
 import ServiceCard from "./ServiceCard";
 import PackageCard from "./PackageCard";
 import TrustFooter from "./TrustFooter";
-
-import GroupTypeSelect, {
-  GroupType,
-} from "../GroupType/Grouptype";
-
 import { useGroup } from "../GroupType/hooks/useGroup";
 import { useServices } from "./hooks/useServices";
 import { usePackages } from "./hooks/usePackages";
@@ -26,12 +21,6 @@ import ServiceCardSkeleton from "./ServiceCardSkeleton";
 import PackageCardSkeleton from "./PackageCardSkeleton";
 
 type Props = {
-  selectedGroup: GroupType | null;
-
-  setSelectedGroup: React.Dispatch<
-    React.SetStateAction<GroupType | null>
-  >;
-
 
   selectedPackage: Package | null;
 
@@ -76,9 +65,6 @@ type Props = {
 };
 
 export default function ServicePackage({
-
-  selectedGroup,
-  setSelectedGroup,
 
   selectedPackage,
   setSelectedPackage,
@@ -131,23 +117,6 @@ export default function ServicePackage({
         py-6
         "
       >
-
-      <GroupTypeSelect
-          groups={groups}
-          selectedId={
-            selectedGroup?.id ?? null
-          }
-          onChange={(id)=>{
-            const group =
-              groups.find(
-                (g)=>g.id===id
-              ) ?? null;
-
-            setSelectedGroup(
-              group
-            );
-          }}
-        />
       </div>
 
       {/* CONTENT */}

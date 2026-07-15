@@ -7,14 +7,16 @@ import {
   ReactNode,
 } from "react";
 
+
 export type CartItem = {
   id?: number;
   quantity: number;
   price?: number;
   service?: any;
   package?: any;
-  [key:string]: any;
+  [key: string]: any;
 };
+
 
 type BookingCartContextType = {
 
@@ -22,150 +24,144 @@ type BookingCartContextType = {
   setItems: (
     items: CartItem[]
   ) => void;
+  itemCount: number;
+  totalPrice: number;
 
-  itemCount:number;
-  totalPrice:number;
-  addItem:(
-    item:CartItem
-  )=>void;
-
-  removeItem:(
+  addItem: (
+    item: CartItem
+  ) => void;
+  removeItem: (
     id:number
-  )=>void;
-
-  clearCart:()=>void;
-
-  // ADD THIS
-  customer:any;
-  setCustomer:(
+  ) => void;
+  clearCart: () => void;
+  customer: any;
+  setCustomer: (
     customer:any
-  )=>void;
+  ) => void;
 
 };
 
 const BookingCartContext =
 createContext<BookingCartContextType | undefined>(
-undefined
+  undefined
 );
 
 export function BookingCartProvider({
-children,
+  children,
 }:{
-children:ReactNode;
+  children:ReactNode;
 }){
 
-const [items,setItems]
-=
-useState<CartItem[]>([]);
+  const [items,setItems] =
+  useState<CartItem[]>([]);
+  const [customer,setCustomer] =
+  useState<any>(null);
 
-// ADD THIS
-const [customer,setCustomer]
-=
-useState<any>(null);
+  const itemCount =
+  items.reduce(
+    (sum,item)=>
+      sum + item.quantity,
+    0
+  );
+  const totalPrice =
+  items.reduce(
+    (sum,item)=>{
 
-const itemCount =
-items.reduce(
-(sum,item)=>
-sum + item.quantity,
-0
-);
+      const price =
+      Number(
+        item.price ??
+        item.service?.prices?.[0]?.price ??
+        item.package?.prices?.[0]?.price ??
+        0
+      );
 
-const totalPrice =
-items.reduce(
-(sum,item)=>{
+      return sum + price * item.quantity;
+    },
+    0
+  );
+  const addItem = (
+    item:CartItem
+  )=>{
 
-const price =
-Number(
-item.price ??
-item.service?.prices?.[0]?.price ??
-item.package?.prices?.[0]?.price ??
-0
-);
+    setItems(prev=>{
 
-return sum + price * item.quantity;
+      const existing =
+      prev.find(
+        x=>x.id === item.id
+      );
 
-},
-0
-);
+      if(existing){
+        return prev.map(x=>
+          x.id === item.id
+          ?
+          {
+            ...x,
+            quantity:
+            x.quantity + item.quantity
+          }
+          :
+          x
+        );
 
-const addItem = (
-item:CartItem
-)=>{
+      }
+      return [
+        ...prev,
+        item
+      ];
+    });
+  };
 
-setItems(prev=>{
-const existing =
-prev.find(
-x=>x.id === item.id
-);
+  const removeItem = (
+    id:number
+  )=>{
 
-if(existing){
-return prev.map(x=>
-x.id === item.id
-?
-{
-...x,
-quantity:
-x.quantity + item.quantity
+    setItems(prev=>
+      prev.filter(
+        item=>item.id !== id
+      )
+    );
+  };
+  const clearCart = ()=>{
+    setItems([]);
+    setCustomer(null);
+
+  };
+
+  return (
+
+    <BookingCartContext.Provider
+
+      value={{
+
+        items,
+        setItems,
+        itemCount,
+        totalPrice,
+        addItem,
+        removeItem,
+        clearCart,
+        customer,
+        setCustomer,
+      }}
+    >
+      {children}
+    </BookingCartContext.Provider>
+
+  );
+
 }
-:
-x
-);
-}
-
-return [
-...prev,
-item
-];
-
-});
-
-};
-
-const removeItem = (
-id:number
-)=>{
-
-setItems(prev=>
-prev.filter(
-item=>item.id !== id
-)
-);
-
-};
-
-const clearCart = ()=>{
-setItems([]);
-};
-
-return (
-<BookingCartContext.Provider
-value={{
-items,
-setItems,
-itemCount,
-totalPrice,
-addItem,
-removeItem,
-clearCart,
-// ADD THESE
-customer,
-setCustomer,
-}}
->
-{children}
-</BookingCartContext.Provider>
-);
-}
-
 export function useBookingCart(){
-const context =
-useContext(
-BookingCartContext
-);
-if(!context){
-throw new Error(
-"useBookingCart must be used inside BookingCartProvider"
-);
-}
-return context;
+
+  const context =
+  useContext(
+    BookingCartContext
+  );
+  if(!context){
+
+    throw new Error(
+      "useBookingCart must be used inside BookingCartProvider"
+    );
+
+  }
+  return context;
 }

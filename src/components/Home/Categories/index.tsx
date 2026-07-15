@@ -3,7 +3,6 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useRef } from "react";
 import SingleItem from "./SingleItem";
-import serviceImages from "./serviceImages";
 import { useServices } from "@/components/Booking/ServicePackage/hooks/useServices";
 
 
@@ -42,50 +41,40 @@ const Categories = () => {
 
   const serviceList = services.map((item:any)=>{
 
+  return {
 
-    const image = serviceImages.find(
-      img => img.slug === item.service.slug
-    );
+    id: item.id,
 
+    title: item.service.name,
 
-
-    return {
-
-      id: item.id,
-
-      title: item.service.name,
+    img:
+      item.service.thumbnail
+        ? `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace("/api","")}/storage/${item.service.thumbnail}`
+        : "/images/services/default.jpg",
 
 
-      img:
-        image?.img ??
-        "/images/services/default.jpg",
+    service: item.service,
+
+    prices: item.prices,
+
+    participants_per_resource:
+      item.participants_per_resource,
 
 
-      service: item.service,
+    service_type:
+      item.service.service_type,
 
 
-      prices: item.prices,
-
-      participants_per_resource:
-        item.participants_per_resource,
+    access_control_type:
+      item.service.access_control_type,
 
 
-      service_type:
-        item.service.service_type,
+    description:
+      item.service.description,
 
+  };
 
-      access_control_type:
-        item.service.access_control_type,
-
-
-      description:
-        item.service.description,
-
-
-    };
-
-  });
-
+});
 
 
 
