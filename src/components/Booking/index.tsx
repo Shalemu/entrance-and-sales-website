@@ -44,6 +44,9 @@ const {
 const [selectedGroup,setSelectedGroup] =
 useState<GroupType|null>(null);
 
+const [pesapalUrl,setPesapalUrl] =
+    useState<string | null>(null);
+
 const [selectedPackage,setSelectedPackage] =
 useState<Package|null>(null);
 const [participants,setParticipants] =
@@ -308,96 +311,83 @@ const combineDateTime = (
 const handleCheckout = async () => {
 
   if (!customer) {
-    toast.error(
-      "Customer details required",
-      {
-        description:
-          "Please complete your contact information before continuing."
-      }
-    );
+    toast.error("Customer details required", {
+      description:
+        "Please complete your contact information before continuing.",
+    });
     return;
   }
 
   if (items.length === 0) {
-    toast.info(
-      "No services selected",
-      {
-        description:
-          "Please select at least one service or package."
-      }
-    );
+    toast.info("No services selected", {
+      description:
+        "Please select at least one service or package.",
+    });
     return;
   }
-
 
   try {
 
     const payload = {
-
       branch_id: 1,
       customer_id: customer.id,
       booking_channel_id: 1,
       currency_id: 1,
       group_type_id: customer?.group?.id ?? null,
-      items: items.map(item => ({
-        branch_service_id:
-          item.service?.id ?? null,
-        package_id:
-          item.package?.id ?? null,
-        service_date:
+
+      contact_name: `${customer.first_name} ${customer.last_name}`,
+      contact_phone: customer.phone,
+      contact_email: customer.email,
+
+      items: items.map((item) => ({
+        branch_service_id: item.service?.id ?? null,
+        package_id: item.package?.id ?? null,
+
+        service_date: item.bookingDate,
+
+        start_datetime: combineDateTime(
           item.bookingDate,
-        start_datetime:
-          combineDateTime(
-            item.bookingDate,
-            item.startTime
-          ),
+          item.startTime
+        ),
 
-        end_datetime:
-          combineDateTime(
-            item.bookingDate,
-            item.endTime
-          ),
+        end_datetime: combineDateTime(
+          item.bookingDate,
+          item.endTime
+        ),
 
-        quantity:
-          item.quantity,
-        adult_quantity:
-          item.adults ?? 0,
-        child_quantity:
-          item.children ?? 0
-
-      }))
-
+        quantity: item.quantity,
+        adult_quantity: item.adults ?? 0,
+        child_quantity: item.children ?? 0,
+      })),
     };
 
+    const response = await createBooking(payload);
 
-    const booking =
-      await createBooking(payload);
+    console.log("Booking response", response);
 
-    setBookingData(booking);
+    setBookingData(response.booking);
+
     setBookingNumber(
-      booking.booking_number
+      response.booking.booking_number
     );
 
-    toast.success(
-      "Booking created successfully"
+    setPesapalUrl(
+      response.payment.redirect_url
     );
 
-    // move to checkout step
+    toast.success("Booking created successfully");
+
     setStep(4);
 
-  } catch(error){
+  } catch (error) {
 
     console.error(error);
-    toast.error(
-      "Booking creation failed",
-      {
-        description:
-          "Please try again."
-      }
-    );
+
+    toast.error("Booking creation failed", {
+      description: "Please try again.",
+    });
 
   }
-
 };
 
 
@@ -453,12 +443,10 @@ step===3 &&
 
 {
   step === 4 && (
-    <Checkout
-      customer={customer}
-      bookingId={bookingData?.id ?? null}
-      bookingNumber={bookingNumber}
-      bookingAmount={bookingData?.total_amount ?? null}
-    />
+  <Checkout
+    bookingNumber={bookingNumber}
+    pesapalUrl={pesapalUrl}
+  />
   )
 }
 

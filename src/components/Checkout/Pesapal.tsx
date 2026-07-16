@@ -1,152 +1,84 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import { toast } from "sonner";
+import React from "react";
+
 
 type Props = {
-  customer: any;
-  bookingId: number | null;
-  bookingNumber: string | null;
-  bookingAmount: number | null;
+
+ redirectUrl:string | null;
+
 };
+
 
 const Pesapal = ({
-  customer,
-  bookingId,
-  bookingNumber,
-  bookingAmount,
-}: Props) => {
+ redirectUrl
+}:Props)=>{
 
-  const [loading, setLoading] = useState(true);
 
-  const [redirectUrl, setRedirectUrl] =
-    useState<string | null>(null);
+ if(!redirectUrl){
 
-  useEffect(() => {
+   return null;
 
-    const initializePayment = async () => {
+ }
 
-      try {
 
-        if (!bookingId || !bookingAmount) {
-          return;
-        }
+ return (
 
-        const response = await fetch(
-          "http://localhost:8000/api/payments/pesapal/create",
-          {
-            method: "POST",
+ <div className="
+ bg-white
+ rounded-lg
+ shadow
+ mt-8
+ ">
 
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
 
-            body: JSON.stringify({
+ <div className="
+ border-b
+ p-5
+ ">
 
-              booking_id: bookingId,
+ <h2 className="
+ text-xl
+ font-semibold
+ ">
+ Complete Your Payment
+ </h2>
 
-              booking_number: bookingNumber,
 
-              amount: bookingAmount,
+ <p className="
+ text-gray-500
+ text-sm
+ mt-1
+ ">
+ Secure checkout powered by Pesapal.
+ </p>
 
-              email: customer?.email,
 
-              phone: customer?.phone,
+ </div>
 
-              first_name: customer?.first_name,
 
-              last_name: customer?.last_name,
+ <iframe
 
-            }),
-          }
-        );
+ src={redirectUrl}
 
-        const data = await response.json();
+ title="Pesapal Checkout"
 
-        console.log("Pesapal Response:", data);
+ className="
+ w-full
+ h-[900px]
+ border-0
+ "
 
-        if (!response.ok) {
+ allow="payment"
 
-          throw new Error(
-            data.message ||
-            "Failed to initialize payment"
-          );
+ />
 
-        }
 
-        if (!data.redirect_url) {
+ </div>
 
-          throw new Error(
-            "Redirect URL not returned."
-          );
-
-        }
-
-        setRedirectUrl(data.redirect_url);
-
-      }
-      catch (error: any) {
-
-        console.error(error);
-
-        toast.error(
-          "Payment Error",
-          {
-            description: error.message,
-          }
-        );
-
-      }
-      finally {
-
-        setLoading(false);
-
-      }
-
-    };
-
-    initializePayment();
-
-  }, [
-    bookingId,
-    bookingNumber,
-    bookingAmount,
-    customer,
-  ]);
-
-  if (redirectUrl) {
-
-    return (
-
-      <div className="bg-white rounded-lg shadow mt-8">
-
-        <div className="border-b p-5">
-
-          <h2 className="text-xl font-semibold">
-            Complete Your Payment
-          </h2>
-
-          <p className="text-gray-500 text-sm mt-1">
-            Secure checkout powered by Pesapal.
-          </p>
-
-        </div>
-
-        <iframe
-          src={redirectUrl}
-          title="Pesapal Checkout"
-          className="w-full h-[900px] border-0"
-          allow="payment"
-        />
-
-      </div>
-
-    );
-
-  }
+ );
 
 };
+
 
 export default Pesapal;

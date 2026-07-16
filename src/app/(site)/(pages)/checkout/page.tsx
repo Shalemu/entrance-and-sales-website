@@ -5,27 +5,33 @@ import Checkout from "@/components/Checkout";
 
 const CheckoutPage = () => {
 
-  const [bookingId, setBookingId] = useState<number | null>(null);
-  const [bookingNumber, setBookingNumber] = useState<string | null>(null);
-  const [bookingAmount, setBookingAmount] = useState<number | null>(null);
+  const [bookingNumber, setBookingNumber] =
+    useState<string | null>(null);
+
+  const [pesapalUrl, setPesapalUrl] =
+    useState<string | null>(null);
 
   useEffect(() => {
+
     const booking = JSON.parse(
       localStorage.getItem("booking") || "{}"
     );
 
-    setBookingId(booking.id || null);
-    setBookingNumber(booking.number || null);
-    setBookingAmount(booking.amount || null);
-  }, []);
+    setBookingNumber(
+      booking.booking_number ?? null
+    );
 
+    setPesapalUrl(
+      booking.redirect_url ?? null
+    );
+
+  }, []);
 
   return (
     <main>
       <Checkout
-        bookingId={bookingId}
         bookingNumber={bookingNumber}
-        bookingAmount={bookingAmount}
+        pesapalUrl={pesapalUrl}
       />
     </main>
   );

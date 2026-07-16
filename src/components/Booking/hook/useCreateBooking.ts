@@ -1,47 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { postBooking } from "../api/booking.api";
+import {
+  postBooking,
+  BookingResponse,
+} from "../api/booking.api";
 
+export function useCreateBooking() {
 
-export type BookingResponse = {
-  id: number;
-  booking_number: string;
-  status: string;
-  total_amount: number;
-};
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  const createBooking = async (
+    payload: any
+  ): Promise<BookingResponse> => {
 
-export function useCreateBooking(){
-
-  const [loading,setLoading] = useState(false);
-
-  const [error,setError] = useState<string | null>(null);
-
-
-  const createBooking = async(
-    payload:any
-  ):Promise<BookingResponse>=>{
-
-    try{
+    try {
 
       setLoading(true);
 
-      const data = await postBooking(payload);
+      return await postBooking(payload);
 
-      return data;
+    } catch (error: any) {
 
-    }
-    catch(error:any){
-
-      setError(
-        error.message ?? "Booking failed"
-      );
-
+      setError(error.message ?? "Booking failed");
       throw error;
 
-    }
-    finally{
+    } finally {
 
       setLoading(false);
 
@@ -49,11 +34,10 @@ export function useCreateBooking(){
 
   };
 
-
   return {
     createBooking,
     loading,
-    error
+    error,
   };
 
 }
