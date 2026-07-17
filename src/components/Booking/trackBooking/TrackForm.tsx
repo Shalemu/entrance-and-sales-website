@@ -1,5 +1,4 @@
 "use client";
-
 import {
   useState
 } from "react";
@@ -14,74 +13,47 @@ type Props = {
   onSubmit:(value:string)=>Promise<void>;
 };
 
-
 export default function TrackForm({
   onSubmit
 }:Props){
 
-
 const [referenceNumber,setReferenceNumber] =
 useState("");
-
 const [loading,setLoading] =
 useState(false);
-
 const [error,setError] =
 useState("");
-
-
-
 const submit = async(
 e:React.FormEvent
 )=>{
 
 e.preventDefault();
-
-
 if(!referenceNumber.trim()){
-
 setError(
 "Please enter your booking reference number"
 );
 
 return;
-
 }
-
-
 try{
-
 setError("");
-
 setLoading(true);
-
 
 await onSubmit(
 referenceNumber.trim()
 );
-
-
 }
 catch(error:any){
-
 setError(
 error.message ??
 "Unable to find booking"
 );
-
 }
 finally{
-
 setLoading(false);
-
 }
-
 };
-
-
-
 return (
-
 <div
 className="
 max-w-[620px]
@@ -95,18 +67,13 @@ border-gray-100
 p-6
 "
 >
-
-
 {/* HEADER */}
-
 <div
 className="
 text-center
 mb-5
 "
 >
-
-
 <div
 className="
 mx-auto
@@ -120,16 +87,11 @@ rounded-lg
 bg-blue-50
 "
 >
-
 <Search
 size={22}
 className="text-blue-600"
 />
-
 </div>
-
-
-
 <h2
 className="
 text-xl
@@ -137,12 +99,8 @@ font-bold
 text-gray-900
 "
 >
-
 Track Your Booking
-
 </h2>
-
-
 <p
 className="
 mt-1
@@ -150,23 +108,12 @@ text-sm
 text-gray-500
 "
 >
-
 Enter your reference number to view booking details
-
 </p>
-
-
 </div>
-
-
-
-
-
 <form
 onSubmit={submit}
 >
-
-
 <label
 className="
 block
@@ -176,19 +123,11 @@ font-semibold
 text-gray-700
 "
 >
-
 Booking Reference Number
-
 </label>
-
-
-
 <input
-
 type="text"
-
 value={referenceNumber}
-
 onChange={(e)=>
 setReferenceNumber(
 e.target.value.toUpperCase()
@@ -213,14 +152,10 @@ focus:bg-white
 focus:ring-2
 focus:ring-blue-100
 "
-
 />
-
-
 
 {
 error &&
-
 <p
 className="
 mt-2
@@ -228,16 +163,10 @@ text-sm
 text-red-500
 "
 >
-
 {error}
 
 </p>
-
 }
-
-
-
-
 <button
 
 disabled={loading}
@@ -273,35 +202,19 @@ loading ?
 size={18}
 className="animate-spin"
 />
-
 Searching...
 
 </>
-
 :
-
 <>
-
 <Search
 size={18}
 />
-
 Track Booking
-
 </>
-
 }
-
-
 </button>
-
-
-
 </form>
-
-
-
-
 <div
 className="
 mt-4
@@ -314,9 +227,7 @@ text-xs
 text-gray-500
 "
 >
-
 Example:
-
 <span
 className="
 font-semibold
@@ -325,12 +236,7 @@ text-gray-700
 >
 BOOK20260001
 </span>
-
-
 </div>
-
-
-
 </div>
 
 );

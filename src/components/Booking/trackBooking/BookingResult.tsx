@@ -179,13 +179,9 @@ border-b
 Name
 </p>
 <p className="font-semibold mt-1">
-{data.customer?.first_name}
-
-{" "}
-
-{data.customer?.last_name}
-
+{data.customer?.name ?? "-"}
 </p>
+
 </div>
 <div>
 <p className="text-sm text-gray-500 flex gap-2">
@@ -265,7 +261,7 @@ data.total_amount
 Booking Date
 </p>
 <p className="font-semibold mt-1">
-{formatDate(data.created_at)}
+{data.booking_date ?? "-"}
 </p>
 </div>
 
@@ -330,7 +326,7 @@ border-t
 <td className="px-5 py-4 font-medium">
 
 {
-item.branch_service?.service?.name ??
+item.service ??
 item.package?.name ??
 "Service"
 }

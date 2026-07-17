@@ -85,11 +85,11 @@ items.reduce(
 
               <BookingTracker />
 
-           <CartButton
-          itemCount={itemCount}
-          totalPrice={totalPrice}
-          onClick={openCartModal}
-        />
+    <CartButton
+    itemCount={itemCount}
+    totalPrice={totalPrice}
+    onClick={openCartModal}
+  />
 
             </div>
 

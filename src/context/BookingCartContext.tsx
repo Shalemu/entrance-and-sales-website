@@ -63,22 +63,77 @@ export function BookingCartProvider({
       sum + item.quantity,
     0
   );
-  const totalPrice =
-  items.reduce(
-    (sum,item)=>{
+const calculateItemTotal = (
+  item: CartItem
+) => {
 
-      const price =
-      Number(
-        item.price ??
-        item.service?.prices?.[0]?.price ??
-        item.package?.prices?.[0]?.price ??
-        0
+  const priceInfo =
+    item.service?.prices?.[0] ??
+    item.package?.prices?.[0];
+
+
+  const price =
+    Number(
+      item.price ??
+      priceInfo?.price ??
+      0
+    );
+
+
+  const priceMode =
+    priceInfo?.price_mode ??
+    item.package?.pricing_mode ??
+    "fixed";
+
+
+  switch(priceMode){
+
+
+    case "per_person":
+
+      return (
+        price *
+        (item.participants ?? 0) *
+        (item.quantity ?? 1)
       );
 
-      return sum + price * item.quantity;
-    },
-    0
-  );
+
+
+    case "per_adult_child":
+
+      return (
+        price *
+        (
+          (item.adults ?? 0) +
+          (item.children ?? 0)
+        ) *
+        (item.quantity ?? 1)
+      );
+
+
+
+    case "fixed":
+
+    default:
+
+      return (
+        price *
+        (item.quantity ?? 1)
+      );
+
+  }
+
+};
+
+
+
+const totalPrice =
+items.reduce(
+  (sum,item)=>
+    sum + calculateItemTotal(item),
+  0
+);
+
   const addItem = (
     item:CartItem
   )=>{

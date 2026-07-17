@@ -77,20 +77,42 @@ export type PackagePrice = {
  
 };
 
+export type PackageItem = {
+  id: number;
+  service_id: number;
+  service_name: string;
+  quantity: number;
+  metadata: any;
+};
+
+export type PackageFeature = {
+  id: number;
+  feature: string;
+  description: string | null;
+};
+
 export type Package = {
   id: number;
   name: string;
   slug: string;
+
   pricing_mode:
-  | "fixed"
-  | "per_person"
-  | "per_adult_child";
-  
+    | "fixed"
+    | "per_person"
+    | "per_adult_child";
+
   minimum_guests: number;
   maximum_guests: number;
+
   status: boolean;
 
   prices: PackagePrice[];
+
+  // Included services
+  items: PackageItem[];
+
+  // Included features
+  features: PackageFeature[];
 
   package_type: {
     id: number;
@@ -107,8 +129,8 @@ export type Package = {
     phone: string;
     email: string;
     address: string;
-    latitude: string | null;
-    longitude: string | null;
+    latitude: string |null;
+    longitude: string |null;
     status: string;
   };
 };

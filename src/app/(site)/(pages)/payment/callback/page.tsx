@@ -1,11 +1,16 @@
 import { Suspense } from "react";
-import PaymentCallbackContent from "./PaymentCallbackContent";
+import Payment from "@/components/Payment";
 
-
-export default function PaymentCallback() {
+export default function Page() {
   return (
-    <Suspense fallback={<div className="p-10 text-center">Loading...</div>}>
-      <PaymentCallbackContent />
+    <Suspense
+      fallback={
+        <div className="p-10 text-center">
+          Loading payment...
+        </div>
+      }
+    >
+      <Payment />
     </Suspense>
   );
 }
