@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useBookingCart } from "@/context/BookingCartContext";
 import CustomerForm from "./CustomerForm";
 import ServicePackage from "./ServicePackage/ServicePackage";
@@ -51,23 +51,21 @@ export default function Booking() {
     useState<Package | null>(null);
   const [participants, setParticipants] =
     useState(1);
-  const [items, setItems] =
-    useState<BookingItem[]>([]);
   const [customer, setCustomer] =
     useState<any>(null);
   const {
-    setItems: setCartItems
+    items: cartItems,
+    setItems: setCartItems,
+    bookingDate,
   }
     =
     useBookingCart();
-  useEffect(() => {
 
-    setCartItems(items);
-
-  }, [
-    items,
-    setCartItems
-  ]);
+  // the cart context stores a loosely-typed CartItem[] shared across
+  // the app; this page owns the actual booking-item shape
+  const items = cartItems as unknown as BookingItem[];
+  const setItems =
+    setCartItems as unknown as Dispatch<SetStateAction<BookingItem[]>>;
 
   const completeStep = (
     current: number,
@@ -470,10 +468,12 @@ const handleCheckout = async () => {
               pkg={selectedPackage}
               participants={participants}
               items={items}
+              bookingDate={bookingDate}
               onIncrease={increaseQuantity}
               onDecrease={decreaseQuantity}
               onCheckout={handleCheckout}
               checkoutLoading={checkoutLoading}
+              showCheckoutButton={step < 4}
 
             />
           </div>

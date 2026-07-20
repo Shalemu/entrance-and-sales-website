@@ -13,6 +13,7 @@ import BookingParticipants from "./BookingParticipants";
 import BookingTimeFields from "./BookingTimeFields";
 import BookingResourcesModal from "./BookingResourcesModal";
 import { Resource } from "../types/types";
+import { useBookingCart } from "@/context/BookingCartContext";
 
 export type BookingData = {
   bookingDate: string;
@@ -54,7 +55,7 @@ export default function BookingDateModal({
   onConfirm,
 }: Props) {
 
-  const [bookingDate, setBookingDate] = useState("");
+  const { bookingDate } = useBookingCart();
   const [startTime, setStartTime] = useState("");
   const [selectedResource,setSelectedResource] =
   useState<number | null>(null);
@@ -71,7 +72,6 @@ export default function BookingDateModal({
     useEffect(() => {
     if(open){
 
-        setBookingDate("");
         setStartTime("");
         setEndTime("");
         setParticipants(defaultParticipants);
@@ -88,11 +88,6 @@ export default function BookingDateModal({
 
   if(!open) return null;
   const submit = async () => {
-
-  if(!bookingDate){
-    setError("Please select booking date");
-    return;
-  }
 
   if(!startTime || !endTime){
     setError("Please select booking time");
@@ -244,11 +239,15 @@ gap-4
 className="
 col-span-12
 lg:col-span-4
+overflow-hidden
 rounded-2xl
 border
-border-gray-100
-bg-gray-50
+border-blue-100
+bg-gradient-to-br
+from-blue-600
+to-blue-500
 p-3
+shadow-sm
 "
 >
 
@@ -260,42 +259,69 @@ items-center
 gap-2
 text-xs
 font-semibold
-text-gray-700
+uppercase
+tracking-wide
+text-blue-100
 "
 >
 <CalendarDays
-size={15}
-className="text-blue-600"
+size={14}
 />
 Booking Date
 </label>
-<input
-type="date"
-min={
-new Date()
-.toISOString()
-.split("T")[0]
-}
 
-value={bookingDate}
-
-onChange={(e)=>
-setBookingDate(e.target.value)
-}
-
+<div
 className="
-h-10
-w-full
-rounded-xl
-border
-border-gray-200
-bg-white
-px-3
-text-sm
-outline-none
-focus:border-blue-500
+flex
+items-center
+gap-3
 "
-/>
+>
+<div
+className="
+flex
+h-9
+w-9
+shrink-0
+items-center
+justify-center
+rounded-xl
+bg-white/15
+text-white
+"
+>
+<CalendarDays size={17}/>
+</div>
+
+<div className="min-w-0">
+{
+bookingDate
+?
+<>
+<p className="truncate text-sm font-bold text-white">
+{
+new Date(bookingDate).toLocaleDateString("en-GB", {
+weekday: "long",
+})
+}
+</p>
+<p className="truncate text-xs text-blue-100">
+{
+new Date(bookingDate).toLocaleDateString("en-GB", {
+day: "2-digit",
+month: "short",
+year: "numeric",
+})
+}
+</p>
+</>
+:
+<p className="text-sm font-semibold text-white">
+Not selected
+</p>
+}
+</div>
+</div>
 </div>
 
 {/* GUESTS */}

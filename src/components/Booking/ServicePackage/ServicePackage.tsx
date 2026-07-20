@@ -7,6 +7,7 @@ import TrustFooter from "./TrustFooter";
 import { useGroup } from "../GroupType/hooks/useGroup";
 import { useServices } from "./hooks/useServices";
 import { usePackages } from "./hooks/usePackages";
+import { useBookingCart } from "@/context/BookingCartContext";
 
 import type {
   BranchService,
@@ -85,14 +86,15 @@ export default function ServicePackage({
   const {
     groups
   } = useGroup();
+  const { bookingDate } = useBookingCart();
   const {
     services,
     loading: servicesLoading
-  } = useServices();
+  } = useServices(bookingDate);
   const {
     packages,
-    loading: packagesLoading 
-  } = usePackages();
+    loading: packagesLoading
+  } = usePackages(bookingDate);
 
   return (
 

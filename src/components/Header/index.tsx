@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useCartModalContext } from "@/app/context/CartSidebarModalContext";
-import BookingDate from "./BookingDate";
+import DatePickerButton from "../Common/DatePickerButton";
 import SupportCard from "./SupportCard";
 import BookingTracker from "./BookingTracker";
 import CartButton from "./CartButton";
@@ -20,15 +20,13 @@ export default function Header() {
 
   const [navigationOpen, setNavigationOpen] = useState(false);
 
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
-
   const { openCartModal } = useCartModalContext();
-  
+
   const {
   items,
-  totalPrice
+  totalPrice,
+  bookingDate,
+  setBookingDate,
 }=useBookingCart();
 
 
@@ -70,9 +68,9 @@ items.reduce(
 
               <Logo />
 
-              <BookingDate
-                value={selectedDate}
-                onChange={setSelectedDate}
+              <DatePickerButton
+                value={bookingDate}
+                onChange={setBookingDate}
               />
 
             </div>

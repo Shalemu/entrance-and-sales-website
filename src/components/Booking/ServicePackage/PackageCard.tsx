@@ -13,10 +13,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Package } from "./types/types";
-import {
-  getActivePrices,
-  getCurrentPricingRule,
-} from "./utils/pricing";
 
 import BookingDateModal, {
   BookingData,
@@ -40,16 +36,7 @@ export default function PackageCard({
 }: Props) {
   const [open, setOpen] = useState(false);
 
-  const rule = getCurrentPricingRule();
-
-  const activePrices = getActivePrices(
-    pkg.prices || [],
-    rule
-  );
-
-  const price =
-    activePrices[0] ??
-    pkg.prices?.[0];
+  const price = pkg.prices?.[0];
 
   const unitPrice = Number(
     price?.price ?? 0

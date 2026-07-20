@@ -12,13 +12,13 @@ type Props = {
   onCustomerSaved: (customer: any) => void;
 };
 
-export default function FamilyForm({
+export default function SocialGroupForm({
   type,
   onSuccess,
   onCustomerSaved,
 }: Props) {
   const [form, setForm] = useState({
-    family_name: "",
+    social_group_name: "",
     email: "",
     phone: "",
     id_number: "",
@@ -27,62 +27,58 @@ export default function FamilyForm({
 
   const [showSuccess, setShowSuccess] = useState(false);
 
+  const { setCustomer } = useBookingCart();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
-const { setCustomer } = useBookingCart();
 
-const handleSubmit = async (
-  e: React.FormEvent<HTMLFormElement>
-) => {
-  e.preventDefault();
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
 
-  try {
-
-    const response = await createCustomer(
-      type,
-      {
-        company_name: form.family_name,
+    try {
+      const response = await createCustomer(type, {
+        company_name: form.social_group_name, // Change this if your API expects social_group_name
         email: form.email,
         phone: form.phone,
         id_number: form.id_number,
         address: form.address,
-      }
-    );
+      });
 
-    onCustomerSaved(
-      response.data ?? response
-    );
-    
-        // Store customer globally
-    setCustomer(response.data);
+      const customer = response.data ?? response;
 
-    // Existing callback
-    onCustomerSaved(response.data);
+      setCustomer(customer);
+      onCustomerSaved(customer);
 
-    setShowSuccess(true);
+      setShowSuccess(true);
 
-    setTimeout(() => {
-      onSuccess();
-    }, 3000);
+      setTimeout(() => {
+        onSuccess();
+      }, 3000);
+    } catch (err: any) {
+      alert(err.message || "Something went wrong");
+    }
+  };
 
-  } catch (err: any) {
-    alert(err.message || "Something went wrong");
-  }
-};
   if (showSuccess) {
-  return <SuccessCard />;
-}
+    return <SuccessCard />;
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="grid gap-5 md:grid-cols-2">
+    <form
+      onSubmit={handleSubmit}
+      className="grid gap-5 md:grid-cols-2"
+    >
       <FormInput
-        label="Family Name"
-        name="family_name"
-        placeholder="Enter family name"
-        value={form.family_name}
+        label="Social Group Name"
+        name="social_group_name"
+        placeholder="Enter group name"
+        value={form.social_group_name}
         onChange={handleChange}
       />
 
@@ -90,7 +86,7 @@ const handleSubmit = async (
         label="Email Address"
         type="email"
         name="email"
-        placeholder="family@example.com"
+        placeholder="group@example.com"
         value={form.email}
         onChange={handleChange}
       />
@@ -122,9 +118,9 @@ const handleSubmit = async (
       <div className="md:col-span-2 flex justify-end">
         <button
           type="submit"
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          className="rounded-lg bg-blue-600 px-6 py-2 text-white transition hover:bg-blue-700"
         >
-          Submit Family
+          Submit Social Group
         </button>
       </div>
     </form>

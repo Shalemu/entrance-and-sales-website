@@ -4,6 +4,8 @@ import {
   createContext,
   useContext,
   useState,
+  Dispatch,
+  SetStateAction,
   ReactNode,
 } from "react";
 
@@ -21,9 +23,9 @@ export type CartItem = {
 type BookingCartContextType = {
 
   items: CartItem[];
-  setItems: (
-    items: CartItem[]
-  ) => void;
+  setItems: Dispatch<
+    SetStateAction<CartItem[]>
+  >;
   itemCount: number;
   totalPrice: number;
 
@@ -37,6 +39,10 @@ type BookingCartContextType = {
   customer: any;
   setCustomer: (
     customer:any
+  ) => void;
+  bookingDate: string;
+  setBookingDate: (
+    date: string
   ) => void;
 
 };
@@ -56,6 +62,10 @@ export function BookingCartProvider({
   useState<CartItem[]>([]);
   const [customer,setCustomer] =
   useState<any>(null);
+  const [bookingDate,setBookingDate] =
+  useState<string>(
+    new Date().toISOString().split("T")[0]
+  );
 
   const itemCount =
   items.reduce(
@@ -172,13 +182,19 @@ items.reduce(
 
     setItems(prev=>
       prev.filter(
-        item=>item.id !== id
+        item=>
+          item.service?.id !== id &&
+          item.package?.id !== id &&
+          item.id !== id
       )
     );
   };
   const clearCart = ()=>{
     setItems([]);
     setCustomer(null);
+    setBookingDate(
+      new Date().toISOString().split("T")[0]
+    );
 
   };
 
@@ -197,6 +213,8 @@ items.reduce(
         clearCart,
         customer,
         setCustomer,
+        bookingDate,
+        setBookingDate,
       }}
     >
       {children}

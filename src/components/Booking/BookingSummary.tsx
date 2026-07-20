@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, CreditCard, Minus, Plus, UsersRound } from "lucide-react";
+import { ArrowRight, CalendarDays, CreditCard, Minus, Plus, UsersRound } from "lucide-react";
 
 
 import type { Package } from "./ServicePackage/types/types";
@@ -13,27 +13,39 @@ type Props = {
   pkg: Package | null;
   participants: number;
   items: BookingItem[];
+  bookingDate: string;
   onIncrease: (serviceId: number) => void;
   onDecrease: (serviceId: number) => void;
-  onCheckout: () => void; 
-   checkoutLoading: boolean; 
+  onCheckout: () => void;
+   checkoutLoading: boolean;
+  showCheckoutButton: boolean;
 };
 
 export default function BookingSummary({
 
- 
+
   pkg,
   participants,
   customer,
   items,
+  bookingDate,
 
   onIncrease,
   onDecrease,
-  
+
   onCheckout,
-  checkoutLoading, 
+  checkoutLoading,
+  showCheckoutButton,
 
 }: Props) {
+  const formattedBookingDate = bookingDate
+    ? new Date(bookingDate).toLocaleDateString("en-GB", {
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "Not selected";
   
   
   const calculateItemTotal = (item: BookingItem) => {
@@ -103,15 +115,25 @@ export default function BookingSummary({
   return (
 
     <div className="
+      overflow-hidden
       rounded-2xl
       border
+      border-gray-100
       bg-white
       shadow-sm
     ">
       {/* HEADER */}
 
       <div className="
+        flex
+        items-center
+        justify-between
+        gap-3
         border-b
+        border-gray-100
+        bg-gradient-to-r
+        from-gray-50
+        to-white
         p-6
       ">
         <h2 className="
@@ -121,80 +143,67 @@ export default function BookingSummary({
         ">
           Booking Summary
         </h2>
+
+        {/* BOOKING DATE */}
+        <div className="flex shrink-0 items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 py-1.5 pl-2.5 pr-3.5 transition-colors hover:border-blue-200">
+          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-blue-600 text-white">
+            <CalendarDays size={13} />
+          </div>
+
+          <span className="text-sm font-semibold text-blue-800">
+            {formattedBookingDate}
+          </span>
+        </div>
       </div>
       <div className="
         space-y-6
         p-6
       ">
-        
+
         {customer && (
-        <div className="border-t pt-6">
-          <h3 className="mb-3 font-semibold">
-           DELIVERY INFO
+        <div className="rounded-2xl border border-gray-200 p-5">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
+            Delivery Info
           </h3>
 
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span>Name</span>
-              <span>
+              <span className="text-gray-500">Name</span>
+              <span className="font-medium text-gray-900">
                 {customer.first_name} {customer.last_name}
               </span>
             </div>
 
             <div className="flex justify-between">
-              <span>Phone</span>
-              <span>{customer.phone}</span>
+              <span className="text-gray-500">Phone</span>
+              <span className="font-medium text-gray-900">{customer.phone}</span>
             </div>
 
             <div className="flex justify-between">
-              <span>Email</span>
-              <span>{customer.email}</span>
+              <span className="text-gray-500">Email</span>
+              <span className="font-medium text-gray-900">{customer.email}</span>
             </div>
           </div>
         </div>
       )}
         {/* BASIC DETAILS */}
-<div className="rounded-2xl border border-gray-200 bg-gradient-to-r from-blue-50 to-white p-5">
-
-  <div className="flex items-center gap-4">
+<div className="flex items-center gap-4 rounded-2xl border border-gray-200 bg-gradient-to-r from-blue-50 to-white p-4">
 
     {/* Icon */}
-    <div className="
-      flex
-      h-12
-      w-12
-      items-center
-      justify-center
-      rounded-xl
-      bg-blue-600
-      text-white
-      shadow-sm
-    ">
-      <UsersRound size={22} />
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
+      <UsersRound size={18} />
     </div>
 
 
 {/* Content */}
 <div className="flex-1">
 
-  <p
-    className="
-      text-sm
-      text-gray-500
-    "
-  >
+  <p className="text-xs text-gray-500">
     Group Type
   </p>
 
 
-  <h3
-    className="
-      mt-1
-      text-lg
-      font-semibold
-      text-gray-900
-    "
-  >
+  <h3 className="mt-0.5 font-semibold text-gray-900">
     {customer?.group?.name ?? "Not Selected"}
   </h3>
 
@@ -213,8 +222,6 @@ export default function BookingSummary({
     ">
       Active
     </div>
-
-  </div>
 
 </div>
         {/* TICKETS */}
@@ -262,9 +269,12 @@ export default function BookingSummary({
                   }
                   className="
                     mb-4
-                    rounded-xl
+                    rounded-2xl
                     border
+                    border-gray-200
                     p-4
+                    transition-shadow
+                    hover:shadow-md
                   "
                 >
                     {/* SERVICE HEADER */}
@@ -314,9 +324,11 @@ export default function BookingSummary({
                           }
 
                           className="
-                            rounded-md
+                            rounded-full
                             border
+                            border-gray-200
                             p-2
+                            transition-colors
                             hover:bg-gray-100
                           "
                         >
@@ -337,10 +349,11 @@ export default function BookingSummary({
                           }
 
                           className="
-                            rounded-md
+                            rounded-full
                             bg-blue-600
                             p-2
                             text-white
+                            transition-colors
                             hover:bg-blue-700
                           "
                         >
@@ -436,15 +449,24 @@ export default function BookingSummary({
 {/* TOTAL */}
 <div className="
   border-t
+  border-gray-100
   pt-6
   space-y-4
 ">
 
   <div className="
     flex
+    items-center
     justify-between
+    rounded-2xl
+    bg-gradient-to-r
+    from-blue-50
+    to-white
+    px-4
+    py-3
     text-lg
     font-bold
+    text-gray-900
   ">
     <span>
       Total
@@ -456,15 +478,19 @@ export default function BookingSummary({
   </div>
 
 
-<CheckoutButton
+{
+  showCheckoutButton && (
+    <CheckoutButton
 
-disabled={items.length===0}
+    disabled={items.length===0}
 
-loading={checkoutLoading}
+    loading={checkoutLoading}
 
-onClick={onCheckout}
+    onClick={onCheckout}
 
-/>
+    />
+  )
+}
 
 </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Trash2 } from "lucide-react";
 
 type Props = {
   item?: any;
@@ -115,32 +116,33 @@ export default function SingleItem({
 
       </div>
 
-
-
       {/* Remove */}
       <button
+        type="button"
         onClick={() => {
 
-          if(id){
+          if (id) {
             removeItemFromCart(id);
           }
 
         }}
+        aria-label="Remove item"
         className="
+          flex
+          h-9
+          w-9
+          shrink-0
+          items-center
+          justify-center
           rounded-lg
-          bg-red-500
-          px-3
-          py-2
-          text-sm
-          font-medium
-          text-white
-          transition
-          hover:bg-red-600
+          text-gray-400
+          transition-colors
+          hover:bg-red-50
+          hover:text-red-600
         "
       >
-        Remove
+        <Trash2 size={17} />
       </button>
-
 
     </div>
   );

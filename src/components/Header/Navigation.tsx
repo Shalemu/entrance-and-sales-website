@@ -14,7 +14,15 @@ export default function Navigation({
   stickyMenu,
   navigationOpen,
 }: Props) {
-  const pathname = usePathname();
+  const rawPathname = usePathname();
+
+  // next.config has trailingSlash: true, so usePathname() returns
+  // "/about/" while menuData paths are written as "/about" — normalize
+  // before comparing so active-state matching actually works.
+  const pathname =
+    rawPathname && rawPathname !== "/"
+      ? rawPathname.replace(/\/+$/, "")
+      : rawPathname;
 
   return (
     <div

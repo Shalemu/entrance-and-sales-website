@@ -32,10 +32,14 @@ export interface ServicePrice {
   group_type: string | null;
   age_category: string | null;
 
-  price_mode: 
+  price_mode:
     | "fixed"
     | "per_person"
     | "per_adult_child";
+
+  // added client-side once a price is matched to the selected
+  // booking date's weekday / weekend / holiday rule
+  price_category?: "weekday" | "weekend" | "holiday";
 }
 
 export interface BranchService {
@@ -73,8 +77,13 @@ export type PackagePrice = {
 
   minimum_quantity: number | null;
   maximum_quantity: number | null;
-  
- 
+
+  active_from?: string | null;
+  active_until?: string | null;
+
+  // added client-side once a price is matched to the selected
+  // booking date's weekday / weekend / holiday rule
+  price_category?: "weekday" | "weekend" | "holiday";
 };
 
 export type PackageItem = {

@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { Trash2 } from "lucide-react";
 import { useCartModalContext } from "@/app/context/CartSidebarModalContext";
 import { useBookingCart } from "@/context/BookingCartContext";
 import SingleItem from "./SingleItem";
 import EmptyCart from "./EmptyCart";
-import Link from "next/link";
 
 
 const CartSidebarModal = () => {
@@ -16,7 +16,8 @@ const CartSidebarModal = () => {
   const {
     items: cartItems,
     totalPrice,
-    removeItem
+    removeItem,
+    clearCart,
   } = useBookingCart();
 
   const validItems =
@@ -299,60 +300,40 @@ const CartSidebarModal = () => {
 
 
 
-              <div
+              <button
+
+                type="button"
+
+                onClick={
+                  clearCart
+                }
+
                 className="
                   flex
-                  gap-4
+                  w-full
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-xl
+                  bg-gradient-to-r
+                  from-red-600
+                  to-red-500
+                  py-3
+                  text-center
+                  font-semibold
+                  text-white
+                  shadow-sm
+                  transition
+                  hover:shadow-md
                 "
+
               >
 
+                <Trash2 size={17} />
 
-                <Link
+                Clear Cart
 
-                  href="/cart"
-
-                  onClick={
-                    closeCartModal
-                  }
-
-                  className="
-                    w-full
-                    rounded
-                    bg-blue-600
-                    py-3
-                    text-center
-                    text-white
-                  "
-
-                >
-
-                  View Booking
-
-                </Link>
-
-
-
-                <Link
-
-                  href="/checkout"
-
-                  className="
-                    w-full
-                    rounded
-                    bg-black
-                    py-3
-                    text-center
-                    text-white
-                  "
-
-                >
-
-                  Checkout
-
-                </Link>
-
-
-              </div>
+              </button>
 
 
             </div>

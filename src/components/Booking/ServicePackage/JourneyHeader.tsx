@@ -1,58 +1,33 @@
 "use client";
 
-import { Compass, CalendarDays } from "lucide-react";
+import { Compass, Sparkles } from "lucide-react";
 
 export default function JourneyHeader() {
-  const today = new Date();
-
-  const currentDate = today.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-
-  const dayName = today.toLocaleDateString("en-GB", {
-    weekday: "long",
-  });
-
   return (
-     <div className="flex items-center justify-between bg-gradient-to-r from-blue-700 to-blue-600 px-6 py-4">
-      {/* Left */}
-      <div className="flex items-center gap-4">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15">
-          <Compass className="text-white" size={22} />
-        </div>
+    <div className="relative overflow-hidden bg-gradient-to-r from-blue-800 via-blue-700 to-blue-600 px-6 py-6">
+      {/* decorative glow */}
+      <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
 
-        <div>
-          <h2 className="text-2xl font-bold text-white">
-            Service & Package
-          </h2>
-
-          <p className="mt-0.5 text-sm text-blue-100">
-            Choose the service you want to book for this trip.
-          </p>
-        </div>
-      </div>
-
-      {/* Right */}
-      <div className="rounded-xl bg-white px-4 py-2.5 shadow-md">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100">
-            <CalendarDays
-              className="text-blue-600"
-              size={18}
-            />
+      <div className="relative flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/20">
+            <Compass className="text-white" size={24} />
           </div>
 
           <div>
-            <h3 className="text-base font-semibold text-gray-900">
-              {currentDate}
-            </h3>
+            <h2 className="text-2xl font-bold text-white">
+              Service &amp; Package
+            </h2>
 
-            <p className="text-xs text-gray-500">
-              {dayName}
+            <p className="mt-0.5 text-sm text-blue-100">
+              Choose the service you want to book for this trip.
             </p>
           </div>
+        </div>
+
+        <div className="hidden shrink-0 items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold text-blue-50 ring-1 ring-white/20 sm:flex">
+          <Sparkles size={14} />
+          Step 3 of 4
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import { apiFetch } from "./api";
 export type CustomerType =
   | "walkin"
   | "individual"
-  | "family"
+  | "social"
   | "corporate";
 
 export async function createCustomer(
@@ -14,7 +14,7 @@ export async function createCustomer(
     method: "POST",
     body: {
       customer_type: type,
-      status: true, 
+      status: true,
       ...payload,
     },
   });

@@ -12,12 +12,6 @@ import {
 
 import { useState } from "react";
 
-
-import {
-  getActivePrices,
-  getCurrentPricingRule
-} from "./utils/pricing";
-
 import BookingDateModal, { BookingData } from "./BookingModal/BookingDateModal";
 import { toast } from "sonner";
 import { BranchService, Resource } from "./types/types";
@@ -44,15 +38,8 @@ export default function ServiceCard({
 }:Props){
 
 const [open,setOpen]=useState(false);
-const rule=getCurrentPricingRule();
-const prices=getActivePrices(
-  service.prices || [],
-  rule
-);
 
-const price =
-prices?.[0] ??
-service.prices?.[0];
+const price = service.prices?.[0];
 
 
 const unitPrice=Number(
@@ -168,6 +155,18 @@ text-blue-600
 >
 TZS {unitPrice.toLocaleString()}
 </p>
+{
+price?.price_category && (
+<p className="
+mt-0.5
+text-[11px]
+capitalize
+text-gray-400
+">
+{price.price_category} price
+</p>
+)
+}
 </div>
 </div>
 
