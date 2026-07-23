@@ -6,6 +6,7 @@ import { ArrowRight, CalendarDays, CreditCard, Minus, Plus, UsersRound } from "l
 import type { Package } from "./ServicePackage/types/types";
 import type { BookingItem } from "../Booking";
 import CheckoutButton from "./CheckoutButton";
+import { calculateItemTotal } from "./utils/calculateItemTotal";
 
 
 type Props = {
@@ -19,6 +20,7 @@ type Props = {
   onCheckout: () => void;
    checkoutLoading: boolean;
   showCheckoutButton: boolean;
+  checkoutLabel?: string;
 };
 
 export default function BookingSummary({
@@ -36,6 +38,7 @@ export default function BookingSummary({
   onCheckout,
   checkoutLoading,
   showCheckoutButton,
+  checkoutLabel,
 
 }: Props) {
   const formattedBookingDate = bookingDate
@@ -48,65 +51,6 @@ export default function BookingSummary({
     : "Not selected";
   
   
-  const calculateItemTotal = (item: BookingItem) => {
-
-  const priceInfo =
-    item.service?.prices?.[0] ??
-    item.package?.prices?.[0];
-
-
-  const price = Number(
-    priceInfo?.price ?? 0
-  );
-
-
-
-  const priceMode =
-    item.service?.prices?.[0]?.price_mode ??
-    item.package?.pricing_mode ??
-    "fixed";
-
-
-  switch(priceMode){
-
-
-    case "fixed":
-
-      return price * item.quantity;
-
-
-
-    case "per_person":
-
-      return (
-        price *
-        item.participants *
-        item.quantity
-      );
-
-
-
-    case "per_adult_child":
-
-      return (
-        price *
-        (
-          (item.adults ?? 0) +
-          (item.children ?? 0)
-        ) *
-        item.quantity
-      );
-
-
-
-    default:
-
-      return price * item.quantity;
-
-  }
-
-};
-
   const total = items.reduce(
     (sum, item) => sum + calculateItemTotal(item),
     0
@@ -487,6 +431,8 @@ export default function BookingSummary({
     loading={checkoutLoading}
 
     onClick={onCheckout}
+
+    label={checkoutLabel}
 
     />
   )

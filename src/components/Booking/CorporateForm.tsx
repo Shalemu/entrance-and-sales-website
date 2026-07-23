@@ -10,20 +10,24 @@ type Props = {
   type: CustomerType;
   onSuccess: () => void;
   onCustomerSaved: (customer: any) => void;
+  initialValues?: any;
 };
 
 export default function CorporateForm({
   type,
   onSuccess,
   onCustomerSaved,
+  initialValues,
 }: Props) {
-  const [form, setForm] = useState({
-    company_name: "",
-    email: "",
-    phone: "",
-    tin_number: "",
-    address: "",
-  });
+  // seeded once from whatever was already saved, so coming back to fix
+  // a mistake doesn't wipe out the fields that were already correct
+  const [form, setForm] = useState(() => ({
+    company_name: initialValues?.company_name ?? "",
+    email: initialValues?.email ?? "",
+    phone: initialValues?.phone ?? "",
+    tin_number: initialValues?.tin_number ?? "",
+    address: initialValues?.address ?? "",
+  }));
 
   const [showSuccess, setShowSuccess] = useState(false);
 

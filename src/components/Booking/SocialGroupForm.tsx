@@ -10,20 +10,27 @@ type Props = {
   type: CustomerType;
   onSuccess: () => void;
   onCustomerSaved: (customer: any) => void;
+  initialValues?: any;
 };
 
 export default function SocialGroupForm({
   type,
   onSuccess,
   onCustomerSaved,
+  initialValues,
 }: Props) {
-  const [form, setForm] = useState({
-    social_group_name: "",
-    email: "",
-    phone: "",
-    id_number: "",
-    address: "",
-  });
+  // seeded once from whatever was already saved, so coming back to fix
+  // a mistake doesn't wipe out the fields that were already correct
+  const [form, setForm] = useState(() => ({
+    social_group_name:
+      initialValues?.social_group_name ??
+      initialValues?.company_name ??
+      "",
+    email: initialValues?.email ?? "",
+    phone: initialValues?.phone ?? "",
+    id_number: initialValues?.id_number ?? "",
+    address: initialValues?.address ?? "",
+  }));
 
   const [showSuccess, setShowSuccess] = useState(false);
 

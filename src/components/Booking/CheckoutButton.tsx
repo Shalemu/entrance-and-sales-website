@@ -6,12 +6,14 @@ type Props = {
   disabled?: boolean;
   loading?: boolean;
   onClick:()=>void;
+  label?: string;
 };
 
 export default function CheckoutButton({
   disabled,
   loading,
-  onClick
+  onClick,
+  label = "Proceed to Checkout",
 }:Props){
 
 return (
@@ -56,7 +58,7 @@ Creating Booking...
 </>
 :
 <>
-Proceed to Checkout
+{label}
 <CreditCard size={18}/>
 </>
 

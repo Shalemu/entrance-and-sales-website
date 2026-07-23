@@ -59,9 +59,13 @@ export function BookingCartProvider({
 }){
 
   const [items,setItems] =
-  useState<CartItem[]>([]);
+  useState<CartItem[]>(
+    []
+  );
   const [customer,setCustomer] =
-  useState<any>(null);
+  useState<any>(
+    null
+  );
   const [bookingDate,setBookingDate] =
   useState<string>(
     new Date().toISOString().split("T")[0]

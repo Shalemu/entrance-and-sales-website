@@ -10,20 +10,24 @@ type Props = {
   type: CustomerType;
   onSuccess: () => void;
   onCustomerSaved: (customer: any) => void;
+  initialValues?: any;
 };
 
 export default function IndividualForm({
   type,
   onSuccess,
   onCustomerSaved,
-  
+  initialValues,
+
 }: Props) {
-  const [form, setForm] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
-  });
+  // seeded once from whatever was already saved, so coming back to fix
+  // a mistake doesn't wipe out the fields that were already correct
+  const [form, setForm] = useState(() => ({
+    first_name: initialValues?.first_name ?? "",
+    last_name: initialValues?.last_name ?? "",
+    email: initialValues?.email ?? "",
+    phone: initialValues?.phone ?? "",
+  }));
 
   // Success state
   const [showSuccess, setShowSuccess] = useState(false);

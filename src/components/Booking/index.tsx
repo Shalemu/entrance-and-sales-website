@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useBookingCart } from "@/context/BookingCartContext";
 import CustomerForm from "./CustomerForm";
 import ServicePackage from "./ServicePackage/ServicePackage";
@@ -14,7 +14,8 @@ import type { BookingData } from "./ServicePackage/BookingModal/BookingDateModal
 import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
 import { useCreateBooking } from "./hook/useCreateBooking";
-import ReferenceNumber from "./ReferenceNumber";
+import PaymentMethod from "../Checkout/PaymentMethod";
+import { calculateItemTotal } from "./utils/calculateItemTotal";
 
 
 export type BookingItem = {
@@ -32,7 +33,8 @@ export type BookingItem = {
 
 export default function Booking() {
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] =
+    useState<number>(1);
   const router = useRouter();
   const [completedSteps, setCompletedSteps] =
     useState<number[]>([]);
@@ -50,7 +52,7 @@ export default function Booking() {
   const [selectedPackage, setSelectedPackage] =
     useState<Package | null>(null);
   const [participants, setParticipants] =
-    useState(1);
+    useState<number>(1);
   const [customer, setCustomer] =
     useState<any>(null);
   const {
@@ -290,8 +292,56 @@ export default function Booking() {
     );
   };
 
-  const [bookingNumber, setBookingNumber] = useState<string | null>(null);
-  const [bookingData, setBookingData] = useState<any>(null);
+  const [bookingNumber, setBookingNumber] =
+    useState<string | null>(null);
+  const [bookingData, setBookingData] =
+    useState<any>(null);
+
+  const [paymentType, setPaymentType] =
+    useState<"full" | "advance">("full");
+
+  // once the cart holds at least one item, dropping back to zero (last
+  // item removed, or "Clear Cart") means nothing is left to book — reset
+  // the whole flow so the user starts again from step 1 instead of
+  // resuming stale customer/package/reference-number state
+  const prevItemCountRef = useRef(items.length);
+
+  useEffect(() => {
+
+    const hadItems = prevItemCountRef.current > 0;
+    const nowEmpty = items.length === 0;
+
+    if (hadItems && nowEmpty) {
+      setStep(1);
+      setCompletedSteps([]);
+      setSelectedPackage(null);
+      setParticipants(1);
+      setCustomer(null);
+      setBookingNumber(null);
+      setBookingData(null);
+      setPaymentType("full");
+      setPesapalUrl(null);
+    }
+
+    prevItemCountRef.current = items.length;
+
+  }, [items.length]);
+
+  // only a service with a "partial" payment rule forces the user to
+  // choose between full and advance payment before the booking is
+  // created — every other service keeps the existing full-payment flow
+  const partialPaymentItem = items.find(
+    item =>
+      item.service?.service?.has_payment_rule &&
+      item.service.service.payment_rule?.payment_type === "partial"
+  );
+
+  const requiresPaymentChoice = !!partialPaymentItem;
+
+  const total = items.reduce(
+    (sum, item) => sum + calculateItemTotal(item),
+    0
+  );
 
   const combineDateTime = (
     date?: string,
@@ -306,58 +356,49 @@ export default function Booking() {
 
   };
 
-const handleCheckout = async () => {
+const submitBooking = async (
+  selectedPaymentType: "full" | "advance",
+  silent = false
+): Promise<boolean> => {
 
-  if (!customer) {
-    toast.error("Customer details required", {
-      description:
-        "Please complete your contact information before continuing.",
-    });
-    return;
-  }
-
-  if (items.length === 0) {
-    toast.info("No services selected", {
-      description:
-        "Please select at least one service or package.",
-    });
-    return;
-  }
+  setPesapalUrl(null);
 
   try {
 
-    const payload = {
-      branch_id: 1,
-      customer_id: customer.id,
-      booking_channel_id: 1,
-      currency_id: 1,
-      group_type_id: customer?.group?.id ?? null,
+      const payload = {
+    branch_id: 1,
+    customer_id: customer.id,
+    booking_channel_id: 1,
+    currency_id: 1,
+    group_type_id: customer?.group?.id ?? null,
 
-      contact_name: `${customer.first_name} ${customer.last_name}`.trim(),
-      contact_phone: customer.phone,
-      contact_email: customer.email,
+    contact_name: `${customer.first_name} ${customer.last_name}`.trim(),
+    contact_phone: customer.phone,
+    contact_email: customer.email,
 
-      items: items.map((item) => ({
-        branch_service_id: item.service?.id ?? null,
-        package_id: item.package?.id ??null,
+    payment_option: selectedPaymentType,
 
-        service_date: item.bookingDate,
+    items: items.map((item) => ({
+      branch_service_id: item.service?.id ?? null,
+      package_id: item.package?.id ?? null,
 
-        start_datetime: combineDateTime(
-          item.bookingDate,
-          item.startTime
-        ),
+      service_date: item.bookingDate,
 
-        end_datetime: combineDateTime(
-          item.bookingDate,
-          item.endTime
-        ),
+      start_datetime: combineDateTime(
+        item.bookingDate,
+        item.startTime
+      ),
 
-        quantity: item.quantity,
-        adult_quantity: item.adults ?? 0,
-        child_quantity: item.children ?? 0,
-      })),
-    };
+      end_datetime: combineDateTime(
+        item.bookingDate,
+        item.endTime
+      ),
+
+      quantity: item.quantity,
+      adult_quantity: item.adults ?? 0,
+      child_quantity: item.children ?? 0,
+    })),
+  };
 
     const response = await createBooking(payload);
 
@@ -373,15 +414,17 @@ const handleCheckout = async () => {
       response.payment.redirect_url
     );
 
-    toast.success(
-      "Booking created successfully",
-      {
-        description:
-          "You will now be redirected to complete your payment.",
-      }
-    );
+    if (!silent) {
+      toast.success(
+        "Booking created successfully",
+        {
+          description:
+            "You will now be redirected to complete your payment.",
+        }
+      );
+    }
 
-    setStep(4);
+    return true;
 
   } catch (error: any) {
 
@@ -395,7 +438,67 @@ const handleCheckout = async () => {
           "Something went wrong while creating your booking. Please try again.",
       }
     );
+
+    return false;
   }
+};
+
+const proceedToCheckout = async () => {
+
+  if (!customer) {
+    toast.error("Customer details required");
+    return;
+  }
+
+
+  if (items.length === 0) {
+    toast.info("No services selected");
+    return;
+  }
+
+
+  // Partial payment services
+  if (requiresPaymentChoice) {
+
+    setStep(3);
+
+    return;
+  }
+
+
+  // Normal flow
+  const success = await submitBooking("full");
+
+  if(success){
+     setStep(4);
+  }
+
+};
+
+// services with a partial payment rule land on step 3 to choose
+// between full and advance payment; the booking (and its PesaPal
+// order) is only created once the user confirms that choice
+const confirmPaymentChoice = async () => {
+
+  const success = await submitBooking(paymentType);
+
+  if (success) {
+    setStep(4);
+  }
+
+};
+
+// lets the user revisit an earlier step without losing anything —
+// customer, cart items, and selections all stay in state (and in
+// sessionStorage) regardless of which step is currently shown
+const goToStep = (target: number) => {
+
+  if (step >= 4 || target >= step) {
+    return;
+  }
+
+  setStep(target);
+
 };
 
 
@@ -407,6 +510,7 @@ const handleCheckout = async () => {
         </h1>
         <Stepper
           currentStep={step}
+          onNavigate={goToStep}
         />
 
         <div className="grid gap-8 lg:grid-cols-3">
@@ -417,6 +521,7 @@ const handleCheckout = async () => {
             {
               step === 1 &&
               <CustomerForm
+                customer={customer}
                 onCustomerSaved={setCustomer}
                 onSuccess={() => {
                   completeStep(1, 2);
@@ -444,8 +549,16 @@ const handleCheckout = async () => {
 
             {
               step === 3 &&
-              <ReferenceNumber
-                value={bookingNumber}
+              partialPaymentItem?.service?.service.payment_rule &&
+              <PaymentMethod
+                paymentRule={
+                  partialPaymentItem?.service?.service?.payment_rule
+                }
+                serviceName={partialPaymentItem?.service?.service?.name}
+                totalAmount={total}
+                value={paymentType}
+                onChange={setPaymentType}
+                loading={checkoutLoading}
               />
             }
 
@@ -471,7 +584,14 @@ const handleCheckout = async () => {
               bookingDate={bookingDate}
               onIncrease={increaseQuantity}
               onDecrease={decreaseQuantity}
-              onCheckout={handleCheckout}
+              onCheckout={
+                step === 3
+                  ? confirmPaymentChoice
+                  : proceedToCheckout
+              }
+              checkoutLabel={
+                step === 3 ? "Continue" : undefined
+              }
               checkoutLoading={checkoutLoading}
               showCheckoutButton={step < 4}
 

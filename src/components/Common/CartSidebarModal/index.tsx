@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { useCartModalContext } from "@/app/context/CartSidebarModalContext";
 import { useBookingCart } from "@/context/BookingCartContext";
@@ -9,6 +10,7 @@ import EmptyCart from "./EmptyCart";
 
 
 const CartSidebarModal = () => {
+  const router = useRouter();
   const {
     isCartModalOpen,
     closeCartModal
@@ -19,6 +21,12 @@ const CartSidebarModal = () => {
     removeItem,
     clearCart,
   } = useBookingCart();
+
+  const handleClearCart = () => {
+    clearCart();
+    closeCartModal();
+    router.push("/");
+  };
 
   const validItems =
     cartItems?.filter(Boolean) ?? [];
@@ -305,7 +313,7 @@ const CartSidebarModal = () => {
                 type="button"
 
                 onClick={
-                  clearCart
+                  handleClearCart
                 }
 
                 className="

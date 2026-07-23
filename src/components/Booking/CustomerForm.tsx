@@ -12,14 +12,23 @@ import { useBookingCart } from "@/context/BookingCartContext";
 type Props = {
   onSuccess: () => void;
   onCustomerSaved: (customer: any) => void;
+  customer?: any;
 };
 
 export default function CustomerForm({
   onSuccess,
   onCustomerSaved,
+  customer,
 }: Props) {
-  const [type, setType] = useState("individual");
-  const [selectedGroup, setSelectedGroup] = useState<any>(null);
+  // seeded from whatever was already saved, so navigating back to this
+  // step (e.g. to fix a typo) reopens on the same tab with the same
+  // values instead of resetting to a blank individual form
+  const [type, setType] = useState(
+    () => customer?.group?.code?.toLowerCase() ?? "individual"
+  );
+  const [selectedGroup, setSelectedGroup] = useState<any>(
+    () => customer?.group ?? null
+  );
 
   const { groups } = useGroup();
   const { bookingDate, setBookingDate } = useBookingCart();
@@ -117,6 +126,7 @@ export default function CustomerForm({
             <IndividualForm
               type="individual"
               onSuccess={handleSuccess}
+              initialValues={customer}
               onCustomerSaved={(customer) =>
                 onCustomerSaved({
                   ...customer,
@@ -130,6 +140,7 @@ export default function CustomerForm({
             <SocialGroupForm
               type="social"
               onSuccess={handleSuccess}
+              initialValues={customer}
               onCustomerSaved={(customer) =>
                 onCustomerSaved({
                   ...customer,
@@ -143,6 +154,7 @@ export default function CustomerForm({
             <CorporateForm
               type="corporate"
               onSuccess={handleSuccess}
+              initialValues={customer}
               onCustomerSaved={(customer) =>
                 onCustomerSaved({
                   ...customer,

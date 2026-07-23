@@ -12,26 +12,31 @@ type Props = {
   className?: string;
 };
 
+
 const sizeClasses = {
   sm: {
-    wrapper: "gap-3 px-3.5 py-2",
-    icon: "h-8 w-8",
+    wrapper: "gap-2 px-3",
+    icon: "h-7 w-7",
+    iconSize: 14,
+    text: "text-xs",
+  },
+
+  md: {
+    wrapper: "gap-3 px-4 h-10",
+    icon: "h-7 w-7",
     iconSize: 15,
     text: "text-sm",
   },
-  md: {
-    wrapper: "gap-4 px-5 py-2.5",
+
+  lg: {
+    wrapper: "gap-4 px-5 h-12",
     icon: "h-9 w-9",
     iconSize: 18,
-    text: "text-sm",
-  },
-  lg: {
-    wrapper: "gap-4 px-6 py-3.5",
-    icon: "h-12 w-12",
-    iconSize: 22,
     text: "text-base",
   },
+
 } as const;
+
 
 export default function DatePickerButton({
   value,
@@ -41,22 +46,34 @@ export default function DatePickerButton({
   min,
   className = "",
 }: Props) {
+
+
   const inputRef = useRef<HTMLInputElement>(null);
+
   const s = sizeClasses[size];
 
+
   const formattedDate = useMemo(() => {
+
     if (!value) return "";
 
-    return new Date(value).toLocaleDateString("en-GB", {
-      weekday: "short",
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    return new Date(value).toLocaleDateString(
+      "en-GB",
+      {
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }
+    );
+
   }, [value]);
+
+
 
   return (
     <>
+
       <button
         type="button"
         onClick={() =>
@@ -64,35 +81,105 @@ export default function DatePickerButton({
             ? inputRef.current.showPicker()
             : inputRef.current?.click()
         }
-        className={`group flex w-full items-center rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:border-blue-400 hover:shadow-md ${s.wrapper} ${className}`}
+        className={`
+          group
+          flex
+          items-center
+          rounded-l-md
+          rounded-r-none
+          border
+          border-blue-600
+          bg-white
+          shadow-sm
+          transition-all
+          duration-200
+          hover:border-blue-400
+          hover:shadow-md
+          ${s.wrapper}
+          ${className}
+        `}
       >
+
+
         <div
-          className={`flex shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-blue-500 text-white shadow-sm transition group-hover:scale-105 ${s.icon}`}
+          className={`
+            flex
+            shrink-0
+            items-center
+            justify-center
+            rounded-md
+            bg-gradient-to-br
+            from-blue-600
+            to-blue-500
+            text-white
+            shadow-sm
+            transition
+            group-hover:scale-105
+            ${s.icon}
+          `}
         >
-          <CalendarDays size={s.iconSize} />
+
+          <CalendarDays
+            size={s.iconSize}
+          />
+
         </div>
 
-        <div className={`flex flex-1 items-center gap-2 whitespace-nowrap ${s.text}`}>
-          <span className="font-medium text-gray-500">
+
+
+        <div
+          className={`
+            flex
+            items-center
+            gap-2
+            whitespace-nowrap
+            ${s.text}
+          `}
+        >
+
+          <span
+            className="
+              font-medium
+              text-gray-500
+            "
+          >
             {label}:
           </span>
 
-          <span
-            className={`font-semibold ${value ? "text-gray-900" : "text-gray-400"}`}
-          >
-            {value ? formattedDate : "Select date"}
-          </span>
-        </div>
-      </button>
 
+          <span
+            className={`
+              font-semibold
+              ${
+                value
+                  ? "text-gray-900"
+                  : "text-gray-400"
+              }
+            `}
+          >
+            {
+              value
+                ? formattedDate
+                : "Select date"
+            }
+          </span>
+
+
+        </div>
+
+
+      </button>
       <input
         ref={inputRef}
         type="date"
         value={value}
         min={min}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) =>
+          onChange(e.target.value)
+        }
         className="hidden"
       />
+
     </>
   );
 }

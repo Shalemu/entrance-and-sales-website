@@ -6,6 +6,14 @@ export interface ResourceType {
   description: string | null;
 }
 
+export interface PaymentRule {
+  id: number;
+  payment_type: "full" | "partial";
+  minimum_amount: number | null;
+  minimum_percentage: number | null;
+  allow_balance_payment: boolean;
+}
+
 
 export interface Resource {
   id: number;
@@ -58,6 +66,8 @@ export interface BranchService {
     service_type: string;
     access_control_type: string;
     status: boolean;
+    has_payment_rule: boolean;
+    payment_rule: PaymentRule | null;
   };
   
   resources: Resource[];  
